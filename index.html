@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ЕНТ 2026 — Математическая грамотность | Тестирование U-Study</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              dark: '#0f2444',
+              primary: '#2563eb',
+              light: '#f1f5f9'
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- React 18 & ReactDOM 18 & Babel CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen">
+  <div id="root"></div>
+
+  <!-- React Application Script with Babel -->
+  <script type="text/babel">
+    const { useState, useEffect, useMemo } = React;
+
+    // 40 Realistic UNT Questions Data
+    const questionsData = [
+      {
+        id: 1,
+        category: "Арифметика и проценты",
+        question: "Товар стоил 24 000 тенге. Сначала цену повысили на 25%, а затем снизили на 20%. Какова окончательная цена товара?",
+        options: [
+          { id: "A", text: "22 000 тенге" },
+          { id: "B", text: "24 000 тенге" },
+          { id: "C", text: "25 200 тенге" },
+          { id: "D", text: "23 500 тенге" }
+        ],
+        correctAnswer: "B",
+        explanation: "После повышения на 25%: 24 000 · 1.25 = 30 000 тенге. После снижения на 20%: 30 000 · 0.8 = 24 000 тенге. Цена вернулась к первоначальной."
+      },
+      {
+        id: 2,
+        category: "Закономерности",
+        question: "Найдите следующее число в последовательности: 3, 7, 15, 31, 63, ...",
+        options: [
+          { id: "A", text: "125" },
+          { id: "B", text: "126" },
+          { id: "C", text: "127" },
+          { id: "D", text: "129" }
+        ],
+        correctAnswer: "C",
+        explanation: "Каждое следующее число получается умножением предыдущего на 2 и прибавлением 1: 63 · 2 + 1 = 127 (или разности: 4, 8, 16, 32, 64; 63 + 64 = 127)."
+      },
+      {
+        id: 3,
+        category: "Уравнения и алгебра",
+        question: "Найдите корни квадратного уравнения: 2x² - 7x + 3 = 0.",
+        options: [
+          { id: "A", text: "x₁ = 3; x₂ = 0.5" },
+          { id: "B", text: "x₁ = -3; x₂ = -0.5" },
+          { id: "C", text: "x₁ = 2; x₂ = 1.5" },
+          { id: "D", text: "x₁ = 6; x₂ = 1" }
+        ],
+        correctAnswer: "A",
+        explanation: "Дискриминант D = (-7)² - 4·2·3 = 49 - 24 = 25. x = (7 ± 5) / (2·2). x₁ = 12/4 = 3; x₂ = 2/4 = 0.5."
+      },
+      {
+        id: 4,
+        category: "Текстовые задачи на движение",
+        question: "Два велосипедиста выехали навстречу друг другу из пунктов А и В, расстояние между которыми 72 км. Скорость первого 14 км/ч, скорость второго 10 км/ч. Через сколько часов они встретятся?",
+        options: [
+          { id: "A", text: "2.5 ч" },
+          { id: "B", text: "3 ч" },
+          { id: "C", text: "3.5 ч" },
+          { id: "D", text: "4 ч" }
+        ],
+        correctAnswer: "B",
+        explanation: "Скорость сближения: v = 14 + 10 = 24 км/ч. Время до встречи: t = S / v = 72 / 24 = 3 часа."
+      },
+      {
+        id: 5,
+        category: "Геометрия",
+        question: "Периметр прямоугольника равен 36 см, а его длина на 4 см больше ширины. Найдите площадь прямоугольника.",
+        options: [
+          { id: "A", text: "72 см²" },
+          { id: "B", text: "77 см²" },
+          { id: "C", text: "80 см²" },
+          { id: "D", text: "65 см²" }
+        ],
+        correctAnswer: "B",
+        explanation: "Пусть ширина x см, тогда длина (x + 4) см. 2(x + x + 4) = 36 ⇒ 2x + 4 = 18 ⇒ 2x = 14 ⇒ x = 7 см (ширина), длина = 11 см. Площадь S = 7 · 11 = 77 см²."
+      },
+      {
+        id: 6,
+        category: "Теория вероятностей",
+        question: "В коробке лежат 8 красных, 7 синих и 5 зеленых карандашей. Какова вероятность того, что наугад извлеченный карандаш окажется синим?",
+        options: [
+          { id: "A", text: "0.25" },
+          { id: "B", text: "0.35" },
+          { id: "C", text: "0.40" },
+          { id: "D", text: "0.50" }
+        ],
+        correctAnswer: "B",
+        explanation: "Всего карандашей: 8 + 7 + 5 = 20. Благоприятных исходов (синих): 7. Вероятность P = 7 / 20 = 0.35."
+      },
+      {
+        id: 7,
+        category: "Степени и корни",
+        question: "Вычислите значение выражения: (3⁵ · 9²) / 27³.",
+        options: [
+          { id: "A", text: "1" },
+          { id: "B", text: "3" },
+          { id: "C", text: "9" },
+          { id: "D", text: "27" }
+        ],
+        correctAnswer: "A",
+        explanation: "Приведем к основанию 3: 9² = (3²)² = 3⁴, 27³ = (3³)³ = 3⁹. В числителе: 3⁵ · 3⁴ = 3⁹. В знаменателе: 3⁹. Получаем: 3⁹ / 3⁹ = 1."
+      },
+      {
+        id: 8,
+        category: "Статистика",
+        question: "Даны числа: 12, 16, 14, 18, 20, 16, 22. Найдите моду и медиану этого числового ряда.",
+        options: [
+          { id: "A", text: "Мода = 16, медиана = 16" },
+          { id: "B", text: "Мода = 16, медиана = 17" },
+          { id: "C", text: "Мода = 14, медиана = 16" },
+          { id: "D", text: "Мода = 18, медиана = 16" }
+        ],
+        correctAnswer: "A",
+        explanation: "Упорядочим ряд: 12, 14, 16, 16, 18, 20, 22. Число 16 встречается чаще всего (2 раза) — это мода. Посередине упорядоченного ряда стоит 4-е число — 16 (медиана)."
+      },
+      {
+        id: 9,
+        category: "Текстовые задачи на работу",
+        question: "Первая бригада может выполнить работу за 12 дней, а вторая — за 6 дней. За сколько дней выполнят эту работу обе бригады, работая совместно?",
+        options: [
+          { id: "A", text: "3 дня" },
+          { id: "B", text: "4 дня" },
+          { id: "C", text: "4.5 дня" },
+          { id: "D", text: "5 дней" }
+        ],
+        correctAnswer: "B",
+        explanation: "Производительность первой бригады 1/12, второй — 1/6. Общая производительность: 1/12 + 2/12 = 3/12 = 1/4 работы в день. Время t = 1 / (1/4) = 4 дня."
+      },
+      {
+        id: 10,
+        category: "Геометрия",
+        question: "Гипотенуза прямоугольного треугольника равна 13 см, а один из катетов равен 12 см. Найдите площадь этого треугольника.",
+        options: [
+          { id: "A", text: "60 см²" },
+          { id: "B", text: "30 см²" },
+          { id: "C", text: "65 см²" },
+          { id: "D", text: "45 см²" }
+        ],
+        correctAnswer: "B",
+        explanation: "По теореме Пифагора второй катет: b = √(13² - 12²) = √(169 - 144) = √25 = 5 см. Площадь: S = (12 · 5) / 2 = 30 см²."
+      },
+      {
+        id: 11,
+        category: "Пропорции и отношения",
+        question: "Число 180 разделили в отношении 2 : 3 : 4. Найдите наибольшую из получившихся частей.",
+        options: [
+          { id: "A", text: "60" },
+          { id: "B", text: "75" },
+          { id: "C", text: "80" },
+          { id: "D", text: "90" }
+        ],
+        correctAnswer: "C",
+        explanation: "Всего частей: 2 + 3 + 4 = 9 частей. На одну часть приходится: 180 / 9 = 20. Наибольшая часть: 4 · 20 = 80."
+      },
+      {
+        id: 12,
+        category: "Логические задачи",
+        question: "В семье четверо детей: Айгерим, Бахыт, Дамир и Мадина. Им 5, 8, 13 и 15 лет. Одному мальчику и одной девочке вместе 20 лет, а Дамир старше Айгерим. Сколько лет Бахыту?",
+        options: [
+          { id: "A", text: "5 лет" },
+          { id: "B", text: "8 лет" },
+          { id: "C", text: "13 лет" },
+          { id: "D", text: "15 лет" }
+        ],
+        correctAnswer: "A",
+        explanation: "Сумма 20 возможна только из чисел 5 и 15 (5 + 15 = 20). Дамир и Бахыт мальчики, Айгерим и Мадина девочки. Бахыту 5 лет, Мадине 15, Дамиру 13, Айгерим 8."
+      },
+      {
+        id: 13,
+        category: "Функции и графики",
+        question: "Найдите координаты вершины параболы y = x² - 6x + 5.",
+        options: [
+          { id: "A", text: "(3; -4)" },
+          { id: "B", text: "(-3; 4)" },
+          { id: "C", text: "(3; 4)" },
+          { id: "D", text: "(6; 5)" }
+        ],
+        correctAnswer: "A",
+        explanation: "x₀ = -(-6) / (2·1) = 3. y₀ = 3² - 6·3 + 5 = 9 - 18 + 5 = -4. Вершина: (3; -4)."
+      },
+      {
+        id: 14,
+        category: "Комбинаторика",
+        question: "Сколько различных трехзначных чисел можно составить из цифр 1, 3, 5, 7, если цифры в числе не повторяются?",
+        options: [
+          { id: "A", text: "12" },
+          { id: "B", text: "18" },
+          { id: "C", text: "24" },
+          { id: "D", text: "64" }
+        ],
+        correctAnswer: "C",
+        explanation: "4 · 3 · 2 = 24 способа."
+      },
+      {
+        id: 15,
+        category: "Неравенства",
+        question: "Решите неравенство: (x - 2)(x + 5) ≤ 0.",
+        options: [
+          { id: "A", text: "[-5; 2]" },
+          { id: "B", text: "(-∞; -5] ∪ [2; +∞)" },
+          { id: "C", text: "(-5; 2)" },
+          { id: "D", text: "[2; 5]" }
+        ],
+        correctAnswer: "A",
+        explanation: "Корни x = -5 и x = 2. Парабола ветвями вверх, неположительные значения лежат в промежутке [-5; 2]."
+      },
+      {
+        id: 16,
+        category: "Арифметика и проценты",
+        question: "В сплаве меди и цинка массой 40 кг содержится 30% цинка. Сколько килограммов чистой меди нужно добавить, чтобы содержание цинка снизилось до 20%?",
+        options: [
+          { id: "A", text: "15 кг" },
+          { id: "B", text: "20 кг" },
+          { id: "C", text: "25 кг" },
+          { id: "D", text: "10 кг" }
+        ],
+        correctAnswer: "B",
+        explanation: "Масса цинка: 40 · 0.30 = 12 кг. Масса нового сплава: 12 / 0.20 = 60 кг. Добавили меди: 60 - 40 = 20 кг."
+      },
+      {
+        id: 17,
+        category: "Тригонометрия",
+        question: "Упростите выражение: sin²α + cos²α + tg²α · cos²α.",
+        options: [
+          { id: "A", text: "1 + sin²α" },
+          { id: "B", text: "2" },
+          { id: "C", text: "cos²α" },
+          { id: "D", text: "1 + cos²α" }
+        ],
+        correctAnswer: "A",
+        explanation: "sin²α + cos²α = 1. tg²α · cos²α = sin²α. Итого: 1 + sin²α."
+      },
+      {
+        id: 18,
+        category: "Геометрия",
+        question: "Длина окружности равна 16π см. Найдите площадь круга, ограниченного этой окружностью.",
+        options: [
+          { id: "A", text: "32π см²" },
+          { id: "B", text: "64π см²" },
+          { id: "C", text: "128π см²" },
+          { id: "D", text: "256π см²" }
+        ],
+        correctAnswer: "B",
+        explanation: "C = 2πR = 16π ⇒ R = 8 см. Площадь круга S = πR² = 64π см²."
+      },
+      {
+        id: 19,
+        category: "Закономерности",
+        question: "Какое число должно стоять вместо знака вопроса (?): [4 → 15], [6 → 35], [8 → 63], [10 → ?]",
+        options: [
+          { id: "A", text: "99" },
+          { id: "B", text: "95" },
+          { id: "C", text: "101" },
+          { id: "D", text: "80" }
+        ],
+        correctAnswer: "A",
+        explanation: "Закономерность: n² - 1. При n = 10: 10² - 1 = 99."
+      },
+      {
+        id: 20,
+        category: "Текстовые задачи",
+        question: "В классе 30 учеников. Из них 18 изучают английский язык, 14 — немецкий, а 6 учеников изучают оба этих языка. Сколько учеников не изучают ни один из этих двух языков?",
+        options: [
+          { id: "A", text: "2" },
+          { id: "B", text: "4" },
+          { id: "C", text: "6" },
+          { id: "D", text: "8" }
+        ],
+        correctAnswer: "B",
+        explanation: "Хотя бы один язык: 18 + 14 - 6 = 26 учеников. Не изучают ни один: 30 - 26 = 4 ученика."
+      },
+      {
+        id: 21,
+        category: "Прогрессии",
+        question: "В арифметической прогрессии первый член a₁ = 4, а разность d = 3. Найдите сумму первых 10 членов этой прогрессии.",
+        options: [
+          { id: "A", text: "165" },
+          { id: "B", text: "175" },
+          { id: "C", text: "185" },
+          { id: "D", text: "195" }
+        ],
+        correctAnswer: "B",
+        explanation: "S₁₀ = (2·4 + 9·3) · 10 / 2 = 35 · 5 = 175."
+      },
+      {
+        id: 22,
+        category: "Стереометрия",
+        question: "Объем куба равен 64 см³. Чему равна площадь полной поверхности этого куба?",
+        options: [
+          { id: "A", text: "64 см²" },
+          { id: "B", text: "96 см²" },
+          { id: "C", text: "128 см²" },
+          { id: "D", text: "72 см²" }
+        ],
+        correctAnswer: "B",
+        explanation: "Ребро куба a = 4 см. Площадь поверхности: S = 6 · 4² = 96 см²."
+      },
+      {
+        id: 23,
+        category: "Логические задачи",
+        question: "Часы отстают на 8 минут за каждые сутки. На сколько минут они отстанут за 3 суток и 12 часов?",
+        options: [
+          { id: "A", text: "24 мин" },
+          { id: "B", text: "28 мин" },
+          { id: "C", text: "30 мин" },
+          { id: "D", text: "32 мин" }
+        ],
+        correctAnswer: "B",
+        explanation: "3.5 суток · 8 минут = 28 минут."
+      },
+      {
+        id: 24,
+        category: "Теория вероятностей",
+        question: "Бросают две игральные кости. Какова вероятность того, что сумма выпавших очков будет равна 8?",
+        options: [
+          { id: "A", text: "5/36" },
+          { id: "B", text: "6/36" },
+          { id: "C", text: "4/36" },
+          { id: "D", text: "7/36" }
+        ],
+        correctAnswer: "A",
+        explanation: "Пары с суммой 8: (2,6), (3,5), (4,4), (5,3), (6,2) — 5 исходов из 36. P = 5/36."
+      },
+      {
+        id: 25,
+        category: "Арифметика и проценты",
+        question: "Какое наименьшее натуральное число при делении на 3 дает остаток 1, при делении на 4 — остаток 2, а при делении на 5 — остаток 3?",
+        options: [
+          { id: "A", text: "58" },
+          { id: "B", text: "59" },
+          { id: "C", text: "62" },
+          { id: "D", text: "118" }
+        ],
+        correctAnswer: "A",
+        explanation: "Каждому остатку не хватает 2 до делителя. НОК(3,4,5) = 60. x = 60 - 2 = 58."
+      },
+      {
+        id: 26,
+        category: "Уравнения и алгебра",
+        question: "Решите систему уравнений: { 2x + y = 11; 3x - y = 9 }. Найдите значение x · y.",
+        options: [
+          { id: "A", text: "12" },
+          { id: "B", text: "15" },
+          { id: "C", text: "18" },
+          { id: "D", text: "20" }
+        ],
+        correctAnswer: "A",
+        explanation: "Складываем: 5x = 20 ⇒ x = 4. y = 11 - 8 = 3. x · y = 12."
+      },
+      {
+        id: 27,
+        category: "Логические задачи",
+        question: "У фермера есть куры и кролики. Всего у них 35 голов и 94 ноги. Сколько кроликов у фермера?",
+        options: [
+          { id: "A", text: "10" },
+          { id: "B", text: "12" },
+          { id: "C", text: "14" },
+          { id: "D", text: "16" }
+        ],
+        correctAnswer: "B",
+        explanation: "4k + 2(35 - k) = 94 ⇒ 2k = 24 ⇒ k = 12 кроликов."
+      },
+      {
+        id: 28,
+        category: "Геометрия",
+        question: "В равнобедренной трапеции основания равны 8 см и 14 см, а боковая сторона — 5 см. Найдите высоту трапеции.",
+        options: [
+          { id: "A", text: "3 см" },
+          { id: "B", text: "4 см" },
+          { id: "C", text: "4.5 см" },
+          { id: "D", text: "3.5 см" }
+        ],
+        correctAnswer: "B",
+        explanation: "Проекция боковой стороны: (14 - 8) / 2 = 3 см. h = √(5² - 3²) = 4 см."
+      },
+      {
+        id: 29,
+        category: "Закономерности",
+        question: "Установите закономерность и определите X: 2 → 5; 3 → 10; 4 → 17; 7 → X.",
+        options: [
+          { id: "A", text: "48" },
+          { id: "B", text: "50" },
+          { id: "C", text: "52" },
+          { id: "D", text: "49" }
+        ],
+        correctAnswer: "B",
+        explanation: "Формула: n² + 1. Для 7: 7² + 1 = 50."
+      },
+      {
+        id: 30,
+        category: "Степени и корни",
+        question: "Найдите значение выражения: √(50) - 2√(18) + √(98).",
+        options: [
+          { id: "A", text: "6√2" },
+          { id: "B", text: "5√2" },
+          { id: "C", text: "4√2" },
+          { id: "D", text: "3√2" }
+        ],
+        correctAnswer: "A",
+        explanation: "5√2 - 6√2 + 7√2 = 6√2."
+      },
+      {
+        id: 31,
+        category: "Статистика",
+        question: "Средний балл пяти учеников равен 82. Когда добавили шестого, средний балл стал 85. Сколько баллов получил шестой ученик?",
+        options: [
+          { id: "A", text: "95" },
+          { id: "B", text: "98" },
+          { id: "C", text: "100" },
+          { id: "D", text: "92" }
+        ],
+        correctAnswer: "C",
+        explanation: "6 · 85 - 5 · 82 = 510 - 410 = 100."
+      },
+      {
+        id: 32,
+        category: "Текстовые задачи на движение",
+        question: "Катер проходит расстояние по течению за 3 часа, а против течения — за 5 часов. Скорость течения реки равна 2 км/ч. Найдите собственную скорость катера.",
+        options: [
+          { id: "A", text: "7 км/ч" },
+          { id: "B", text: "8 км/ч" },
+          { id: "C", text: "9 км/ч" },
+          { id: "D", text: "10 км/ч" }
+        ],
+        correctAnswer: "B",
+        explanation: "3(v + 2) = 5(v - 2) ⇒ 2v = 16 ⇒ v = 8 км/ч."
+      },
+      {
+        id: 33,
+        category: "Геометрия",
+        question: "Один из углов ромба равен 60°, а меньшая диагональ равна 10 см. Чему равен периметр ромба?",
+        options: [
+          { id: "A", text: "30 см" },
+          { id: "B", text: "40 см" },
+          { id: "C", text: "50 см" },
+          { id: "D", text: "60 см" }
+        ],
+        correctAnswer: "B",
+        explanation: "Сторона ромба равна меньшей диагонали = 10 см. Периметр P = 4 · 10 = 40 см."
+      },
+      {
+        id: 34,
+        category: "Проценты",
+        question: "Вкладчик внес в банк 500 000 тенге под 10% годовых (сложные проценты). Какая сумма будет на счету через 2 года?",
+        options: [
+          { id: "A", text: "600 000 тг" },
+          { id: "B", text: "605 000 тг" },
+          { id: "C", text: "610 000 тг" },
+          { id: "D", text: "595 000 тг" }
+        ],
+        correctAnswer: "B",
+        explanation: "500 000 · 1.1² = 500 000 · 1.21 = 605 000 тенге."
+      },
+      {
+        id: 35,
+        category: "Комбинаторика",
+        question: "В турнире по шахматам участвуют 8 человек. Каждый участник играет с каждым ровно одну партию. Сколько всего партий будет сыграно?",
+        options: [
+          { id: "A", text: "24" },
+          { id: "B", text: "28" },
+          { id: "C", text: "32" },
+          { id: "D", text: "56" }
+        ],
+        correctAnswer: "B",
+        explanation: "(8 · 7) / 2 = 28 партий."
+      },
+      {
+        id: 36,
+        category: "Функции и графики",
+        question: "Какова область определения функции f(x) = √(2x - 8) / (x - 6)?",
+        options: [
+          { id: "A", text: "[4; +∞)" },
+          { id: "B", text: "[4; 6) ∪ (6; +∞)" },
+          { id: "C", text: "(6; +∞)" },
+          { id: "D", text: "[0; 6) ∪ (6; +∞)" }
+        ],
+        correctAnswer: "B",
+        explanation: "2x - 8 ≥ 0 ⇒ x ≥ 4. x ≠ 6. Итого: [4; 6) ∪ (6; +∞)."
+      },
+      {
+        id: 37,
+        category: "Арифметика",
+        question: "Сколько четных трехзначных чисел можно составить из цифр 2, 4, 7, 9, если цифры не могут повторяться?",
+        options: [
+          { id: "A", text: "12" },
+          { id: "B", text: "16" },
+          { id: "C", text: "18" },
+          { id: "D", text: "24" }
+        ],
+        correctAnswer: "A",
+        explanation: "На последнем месте 2 или 4 (2 варианта). На 1-м месте 3, на 2-м 2: 3 · 2 · 2 = 12."
+      },
+      {
+        id: 38,
+        category: "Логические задачи",
+        question: "Улитка днем поднимается по столбу высотой 10 метров на 3 метра, а за ночь сползает на 2 метра. На какой день она достигнет вершины столба?",
+        options: [
+          { id: "A", text: "На 7-й день" },
+          { id: "B", text: "На 8-й день" },
+          { id: "C", text: "На 9-й день" },
+          { id: "D", text: "На 10-й день" }
+        ],
+        correctAnswer: "B",
+        explanation: "За 7 суток она на 7 метрах. На 8-й день днем: 7 + 3 = 10 м — вершина достигнута."
+      },
+      {
+        id: 39,
+        category: "Геометрия",
+        question: "В прямоугольном треугольнике катеты равны 6 см и 8 см. Найдите радиус описанной около него окружности.",
+        options: [
+          { id: "A", text: "4 см" },
+          { id: "B", text: "5 см" },
+          { id: "C", text: "6 см" },
+          { id: "D", text: "10 см" }
+        ],
+        correctAnswer: "B",
+        explanation: "Гипотенуза c = 10 см. R = 10 / 2 = 5 см."
+      },
+      {
+        id: 40,
+        category: "Текстовые задачи",
+        question: "Сумма возрастов отца и сына равна 48 годам. Отец старше сына в 3 раза. Через сколько лет отец будет старше сына ровно в 2 раза?",
+        options: [
+          { id: "A", text: "10 лет" },
+          { id: "B", text: "12 лет" },
+          { id: "C", text: "14 лет" },
+          { id: "D", text: "15 лет" }
+        ],
+        correctAnswer: "B",
+        explanation: "Сыну 12, отцу 36. Разница 24 года. Отец вдвое старше, когда сыну 24 года: 24 - 12 = 12 лет."
+      }
+    ];
+
+    function App() {
+      const questions = questionsData;
+      const [currentIndex, setCurrentIndex] = useState(0);
+      const [answers, setAnswers] = useState({});
+      const [bookmarked, setBookmarked] = useState({});
+      const [timeLeft, setTimeLeft] = useState(120 * 60); // 120 min
+      const [isTestFinished, setIsTestFinished] = useState(false);
+      const [showConfirmModal, setShowConfirmModal] = useState(false);
+      const [showCalculator, setShowCalculator] = useState(false);
+      const [fontSize, setFontSize] = useState("normal");
+      const [filterMode, setFilterMode] = useState("all");
+      const [reviewFilter, setReviewFilter] = useState("all");
+      const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+
+      // Calculator State
+      const [calcDisplay, setCalcDisplay] = useState("0");
+      const [calcPrev, setCalcPrev] = useState(null);
+      const [calcOp, setCalcOp] = useState(null);
+      const [calcResetOnNext, setCalcResetOnNext] = useState(false);
+
+      // Timer
+      useEffect(() => {
+        if (isTestFinished) return;
+        const timer = setInterval(() => {
+          setTimeLeft(prev => {
+            if (prev <= 1) {
+              clearInterval(timer);
+              setIsTestFinished(true);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+        return () => clearInterval(timer);
+      }, [isTestFinished]);
+
+      const formattedTime = useMemo(() => {
+        const totalMinutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        return `${totalMinutes}:${String(seconds).padStart(2, '0')}`;
+      }, [timeLeft]);
+
+      const currentQuestion = questions[currentIndex] || questions[0];
+      const answeredCount = Object.keys(answers).length;
+      const bookmarkedCount = Object.values(bookmarked).filter(Boolean).length;
+      const unansweredCount = questions.length - answeredCount;
+      const progressPercent = Math.round((answeredCount / questions.length) * 100);
+
+      const handleSelectOption = (optionId) => {
+        if (isTestFinished) return;
+        setAnswers(prev => ({ ...prev, [currentQuestion.id]: optionId }));
+      };
+
+      const handleClearAnswer = () => {
+        if (isTestFinished) return;
+        setAnswers(prev => {
+          const updated = { ...prev };
+          delete updated[currentQuestion.id];
+          return updated;
+        });
+      };
+
+      const handleToggleBookmark = (qId = currentQuestion.id) => {
+        setBookmarked(prev => ({ ...prev, [qId]: !prev[qId] }));
+      };
+
+      const handlePrev = () => {
+        if (currentIndex > 0) setCurrentIndex(currentIndex - 1);
+      };
+
+      const handleNext = () => {
+        if (currentIndex < questions.length - 1) {
+          setCurrentIndex(currentIndex + 1);
+        } else {
+          setShowConfirmModal(true);
+        }
+      };
+
+      const handleFinishTest = () => {
+        setShowConfirmModal(false);
+        setIsTestFinished(true);
+      };
+
+      const handleRestartTest = () => {
+        setAnswers({});
+        setBookmarked({});
+        setTimeLeft(120 * 60);
+        setCurrentIndex(0);
+        setIsTestFinished(false);
+        setShowConfirmModal(false);
+      };
+
+      // Keyboard navigation
+      useEffect(() => {
+        const handleKeyDown = (e) => {
+          if (isTestFinished || showConfirmModal || showCalculator) return;
+          if (e.key === 'ArrowLeft') handlePrev();
+          else if (e.key === 'ArrowRight') handleNext();
+          else if (['1', '2', '3', '4'].includes(e.key)) {
+            const idx = parseInt(e.key) - 1;
+            if (currentQuestion.options[idx]) handleSelectOption(currentQuestion.options[idx].id);
+          } else if (['a', 'b', 'c', 'd'].includes(e.key.toLowerCase())) {
+            handleSelectOption(e.key.toUpperCase());
+          }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+      }, [currentIndex, isTestFinished, showConfirmModal, showCalculator, currentQuestion]);
+
+      // Calculator logic
+      const handleCalcDigit = (d) => {
+        if (calcResetOnNext || calcDisplay === "0") {
+          setCalcDisplay(String(d));
+          setCalcResetOnNext(false);
+        } else if (calcDisplay.length < 12) {
+          setCalcDisplay(calcDisplay + d);
+        }
+      };
+
+      const executeCalc = (a, b, op) => {
+        switch (op) {
+          case '+': return a + b;
+          case '-': return a - b;
+          case '*': return a * b;
+          case '/': return b !== 0 ? a / b : 'Ошибка';
+          default: return b;
+        }
+      };
+
+      const handleCalcOp = (op) => {
+        const cur = parseFloat(calcDisplay);
+        if (calcPrev === null) {
+          setCalcPrev(cur);
+        } else if (calcOp) {
+          const res = executeCalc(calcPrev, cur, calcOp);
+          setCalcDisplay(String(res));
+          setCalcPrev(res);
+        }
+        setCalcOp(op);
+        setCalcResetOnNext(true);
+      };
+
+      const handleCalcEqual = () => {
+        if (calcOp && calcPrev !== null) {
+          const res = executeCalc(calcPrev, parseFloat(calcDisplay), calcOp);
+          setCalcDisplay(String(res));
+          setCalcPrev(null);
+          setCalcOp(null);
+          setCalcResetOnNext(true);
+        }
+      };
+
+      const handleCalcClear = () => {
+        setCalcDisplay("0");
+        setCalcPrev(null);
+        setCalcOp(null);
+        setCalcResetOnNext(false);
+      };
+
+      const scoreResults = useMemo(() => {
+        let correct = 0;
+        let incorrect = 0;
+        let skipped = 0;
+        questions.forEach(q => {
+          const studentAns = answers[q.id];
+          if (!studentAns) skipped++;
+          else if (studentAns === q.correctAnswer) correct++;
+          else incorrect++;
+        });
+        const percent = Math.round((correct / questions.length) * 100);
+        const timeSpent = 120 * 60 - timeLeft;
+        return {
+          correct,
+          incorrect,
+          skipped,
+          percent,
+          total: questions.length,
+          spentMinutes: Math.floor(timeSpent / 60),
+          spentSeconds: timeSpent % 60
+        };
+      }, [answers, questions, timeLeft]);
+
+      const fontClasses = {
+        small: "text-sm",
+        normal: "text-base",
+        large: "text-lg"
+      };
+
+      // Results screen view
+      if (isTestFinished) {
+        const filteredReview = questions.filter(q => {
+          const studentAns = answers[q.id];
+          const isCorrect = studentAns === q.correctAnswer;
+          if (reviewFilter === 'correct') return isCorrect;
+          if (reviewFilter === 'incorrect') return studentAns && !isCorrect;
+          if (reviewFilter === 'skipped') return !studentAns;
+          return true;
+        });
+
+        return (
+          <div className="min-h-screen p-4 sm:p-6 md:p-8 flex flex-col items-center">
+            <div className="max-w-5xl w-full bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+              <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-blue-800 text-white p-6 sm:p-8 text-center">
+                <div className="inline-flex items-center gap-2 bg-blue-500/20 text-blue-200 px-4 py-1.5 rounded-full text-sm font-medium mb-3 border border-blue-400/30">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Тестирование завершено
+                </div>
+                <h1 className="text-2xl sm:text-3xl font-bold mb-1">Математическая грамотность (ЕНТ)</h1>
+                <p className="text-blue-200 text-sm">Итоговые результаты официального тестирования</p>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 max-w-3xl mx-auto">
+                  <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10">
+                    <div className="text-3xl sm:text-4xl font-extrabold">{scoreResults.correct} <span className="text-xl text-blue-300 font-normal">/ {scoreResults.total}</span></div>
+                    <div className="text-xs text-blue-200 font-medium uppercase mt-1">Итоговый балл</div>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10">
+                    <div className="text-3xl sm:text-4xl font-extrabold text-emerald-300">{scoreResults.percent}%</div>
+                    <div className="text-xs text-blue-200 font-medium uppercase mt-1">Процент успеха</div>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10">
+                    <div className="text-3xl sm:text-4xl font-extrabold text-amber-300">{scoreResults.spentMinutes}м {scoreResults.spentSeconds}с</div>
+                    <div className="text-xs text-blue-200 font-medium uppercase mt-1">Время сдачи</div>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10">
+                    <div className="text-3xl sm:text-4xl font-extrabold text-rose-300">{scoreResults.incorrect + scoreResults.skipped}</div>
+                    <div className="text-xs text-blue-200 font-medium uppercase mt-1">Ошибок / Пропусков</div>
+                  </div>
+                </div>
+
+                <div className="mt-6">
+                  <button
+                    onClick={handleRestartTest}
+                    className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-6 py-2.5 rounded-xl shadow-lg transition active:scale-95"
+                  >
+                    Пройти тест заново
+                  </button>
+                </div>
+              </div>
+
+              {/* Review List */}
+              <div className="p-6 sm:p-8">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-200 pb-5 mb-6">
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900">Подробный разбор заданий</h2>
+                    <p className="text-sm text-slate-500">Проверьте правильные ответы и изучите подробные решения задач</p>
+                  </div>
+                  <div className="flex flex-wrap gap-2 bg-slate-100 p-1 rounded-xl text-xs sm:text-sm font-medium">
+                    <button onClick={() => setReviewFilter('all')} className={`px-3 py-1.5 rounded-lg transition ${reviewFilter === 'all' ? 'bg-white text-slate-900 shadow-sm font-semibold' : 'text-slate-600'}`}>Все ({questions.length})</button>
+                    <button onClick={() => setReviewFilter('correct')} className={`px-3 py-1.5 rounded-lg transition ${reviewFilter === 'correct' ? 'bg-emerald-600 text-white font-semibold' : 'text-slate-600'}`}>Верно ({scoreResults.correct})</button>
+                    <button onClick={() => setReviewFilter('incorrect')} className={`px-3 py-1.5 rounded-lg transition ${reviewFilter === 'incorrect' ? 'bg-rose-600 text-white font-semibold' : 'text-slate-600'}`}>Ошибки ({scoreResults.incorrect})</button>
+                    <button onClick={() => setReviewFilter('skipped')} className={`px-3 py-1.5 rounded-lg transition ${reviewFilter === 'skipped' ? 'bg-amber-600 text-white font-semibold' : 'text-slate-600'}`}>Пропущено ({scoreResults.skipped})</button>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  {filteredReview.map(q => {
+                    const studentAns = answers[q.id];
+                    const isCorrect = studentAns === q.correctAnswer;
+                    const isSkipped = !studentAns;
+
+                    return (
+                      <div key={q.id} className={`rounded-xl border p-5 ${isSkipped ? 'border-amber-300 bg-amber-50/40' : isCorrect ? 'border-emerald-200 bg-emerald-50/20' : 'border-rose-200 bg-rose-50/30'}`}>
+                        <div className="flex items-center justify-between gap-2 mb-3">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-slate-900">Вопрос {q.id}</span>
+                            <span className="text-xs px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-700 font-medium">{q.category}</span>
+                          </div>
+                          <div>
+                            {isSkipped ? (
+                              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800">Пропущен</span>
+                            ) : isCorrect ? (
+                              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">✓ Верно (+1 балл)</span>
+                            ) : (
+                              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-rose-100 text-rose-800">✕ Неверно (0 баллов)</span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="text-slate-800 font-medium mb-4">{q.question}</div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-4">
+                          {q.options.map(opt => {
+                            const isStudent = studentAns === opt.id;
+                            const isTarget = q.correctAnswer === opt.id;
+
+                            let optClass = "border-slate-200 bg-white text-slate-700";
+                            let badgeClass = "bg-slate-100 text-slate-700 border-slate-300";
+
+                            if (isTarget) {
+                              optClass = "border-emerald-500 bg-emerald-50 text-emerald-950 font-medium ring-1 ring-emerald-500";
+                              badgeClass = "bg-emerald-600 text-white border-emerald-600 font-bold";
+                            } else if (isStudent && !isCorrect) {
+                              optClass = "border-rose-400 bg-rose-50 text-rose-950 ring-1 ring-rose-400";
+                              badgeClass = "bg-rose-600 text-white border-rose-600 font-bold";
+                            }
+
+                            return (
+                              <div key={opt.id} className={`flex items-start gap-3 p-3 rounded-xl border text-sm ${optClass}`}>
+                                <span className={`w-6 h-6 rounded-full border flex items-center justify-center text-xs ${badgeClass}`}>{opt.id}</span>
+                                <span className="flex-1">{opt.text}</span>
+                                {isTarget && <span className="text-emerald-600 text-xs font-bold self-center">✓ Правильный</span>}
+                                {isStudent && !isTarget && <span className="text-rose-600 text-xs font-bold self-center">Ваш выбор</span>}
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {q.explanation && (
+                          <div className="bg-blue-50/80 border border-blue-200 rounded-xl p-3.5 text-xs sm:text-sm text-blue-900">
+                            <div className="font-bold flex items-center gap-1.5 mb-1 text-blue-800">
+                              Пояснение и решение:
+                            </div>
+                            <div className="leading-relaxed">{q.explanation}</div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // Active Testing View
+      return (
+        <div className="min-h-screen flex flex-col">
+          {/* HEADER */}
+          <header className="bg-[#0f2444] text-white sticky top-0 z-40 shadow-md">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-4">
+              
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-black text-lg tracking-tight shadow-md flex-shrink-0">
+                  ЕНТ
+                </div>
+                <div className="truncate">
+                  <div className="flex items-center gap-2">
+                    <h1 className="text-base sm:text-lg font-bold truncate">Математическая грамотность</h1>
+                    <span className="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                      Идет экзамен
+                    </span>
+                  </div>
+                  <div className="text-xs text-blue-200 hidden sm:block">
+                    Официальный интерфейс тестирования U-Study / НЦТ
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+                {/* Font Size */}
+                <div className="hidden lg:flex items-center bg-blue-950/60 border border-blue-800/60 rounded-xl p-1 text-xs">
+                  <button onClick={() => setFontSize("small")} className={`px-2 py-1 rounded-lg ${fontSize === 'small' ? 'bg-blue-600 text-white font-bold' : 'text-blue-300'}`}>A-</button>
+                  <button onClick={() => setFontSize("normal")} className={`px-2 py-1 rounded-lg ${fontSize === 'normal' ? 'bg-blue-600 text-white font-bold' : 'text-blue-300'}`}>A</button>
+                  <button onClick={() => setFontSize("large")} className={`px-2 py-1 rounded-lg ${fontSize === 'large' ? 'bg-blue-600 text-white font-bold' : 'text-blue-300'}`}>A+</button>
+                </div>
+
+                {/* Calculator */}
+                <button
+                  onClick={() => setShowCalculator(!showCalculator)}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium border transition ${
+                    showCalculator ? 'bg-blue-600 border-blue-400 text-white' : 'bg-blue-950/50 hover:bg-blue-900 border-blue-800 text-blue-200'
+                  }`}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                  <span className="hidden sm:inline">Калькулятор</span>
+                </button>
+
+                {/* TIMER 120 MIN */}
+                <div
+                  className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl border font-mono font-bold tracking-wider ${
+                    timeLeft < 300
+                      ? 'bg-rose-600/90 border-rose-400 text-white animate-pulse'
+                      : timeLeft < 600
+                      ? 'bg-amber-600/90 border-amber-400 text-white'
+                      : 'bg-blue-950/80 border-blue-700/60 text-emerald-400'
+                  }`}
+                >
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-current" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div className="text-sm sm:text-base">{formattedTime}</div>
+                </div>
+
+                {/* Mobile Drawer Trigger */}
+                <button
+                  onClick={() => setMobileDrawerOpen(true)}
+                  className="lg:hidden p-2 rounded-xl bg-blue-900/60 border border-blue-700 text-blue-200"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </button>
+
+                {/* Finish Button */}
+                <button
+                  onClick={() => setShowConfirmModal(true)}
+                  className="hidden sm:inline-flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-semibold text-xs sm:text-sm px-4 py-2 rounded-xl shadow transition"
+                >
+                  Завершить тест
+                </button>
+              </div>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="w-full bg-blue-950 h-1.5 overflow-hidden">
+              <div
+                className="bg-emerald-400 h-full transition-all duration-300"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+          </header>
+
+          {/* MAIN WORKSPACE */}
+          <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6 flex-1 w-full grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            {/* QUESTION CARD */}
+            <main className="lg:col-span-8 flex flex-col gap-4">
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+                <div className="bg-slate-50 border-b border-slate-200 px-5 py-3.5 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-2.5">
+                    <span className="bg-blue-600 text-white font-bold text-xs sm:text-sm px-3 py-1 rounded-lg shadow-sm">
+                      Вопрос {currentQuestion.id} из {questions.length}
+                    </span>
+                    <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-200/70 text-slate-700">
+                      {currentQuestion.category}
+                    </span>
+                    <span className="hidden sm:inline-block text-xs text-slate-400 font-medium">
+                      • 1 балл
+                    </span>
+                  </div>
+
+                  <button
+                    onClick={() => handleToggleBookmark(currentQuestion.id)}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                      bookmarked[currentQuestion.id]
+                        ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                        : 'bg-white hover:bg-slate-100 text-slate-600 border border-slate-300'
+                    }`}
+                  >
+                    <svg
+                      className={`w-4 h-4 ${bookmarked[currentQuestion.id] ? 'text-amber-600 fill-amber-500' : 'text-slate-400'}`}
+                      fill={bookmarked[currentQuestion.id] ? 'currentColor' : 'none'}
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                    </svg>
+                    <span>{bookmarked[currentQuestion.id] ? 'В закладках' : 'В закладки'}</span>
+                  </button>
+                </div>
+
+                <div className={`p-6 sm:p-8 ${fontClasses[fontSize]}`}>
+                  <div className="text-slate-900 font-medium leading-relaxed mb-6 select-text text-base sm:text-lg">
+                    {currentQuestion.question}
+                  </div>
+
+                  {/* 4 Radio Buttons */}
+                  <div className="space-y-3">
+                    {currentQuestion.options.map((option) => {
+                      const isSelected = answers[currentQuestion.id] === option.id;
+                      return (
+                        <label
+                          key={option.id}
+                          onClick={() => handleSelectOption(option.id)}
+                          className={`flex items-start gap-4 p-4 rounded-xl border-2 transition-all cursor-pointer ${
+                            isSelected
+                              ? 'border-blue-600 bg-blue-50/90 shadow-sm text-blue-950 font-medium'
+                              : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50 text-slate-700 bg-white'
+                          }`}
+                        >
+                          <div className="pt-0.5 flex-shrink-0">
+                            <div
+                              className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-sm border-2 transition ${
+                                isSelected
+                                  ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+                                  : 'border-slate-300 bg-slate-50 text-slate-600'
+                              }`}
+                            >
+                              {option.id}
+                            </div>
+                          </div>
+
+                          <div className="flex-1 pt-1 leading-relaxed text-sm sm:text-base">
+                            {option.text}
+                          </div>
+
+                          {isSelected && (
+                            <div className="text-blue-600 pt-1 flex-shrink-0">
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                              </svg>
+                            </div>
+                          )}
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Bottom Buttons */}
+                <div className="bg-slate-50 border-t border-slate-200 px-5 py-4 flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handlePrev}
+                      disabled={currentIndex === 0}
+                      className={`inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold border transition ${
+                        currentIndex === 0
+                          ? 'opacity-40 cursor-not-allowed bg-slate-100 border-slate-200 text-slate-400'
+                          : 'bg-white hover:bg-slate-100 border-slate-300 text-slate-700 shadow-sm'
+                      }`}
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                      </svg>
+                      <span>Назад</span>
+                    </button>
+
+                    {answers[currentQuestion.id] && (
+                      <button
+                        onClick={handleClearAnswer}
+                        className="text-xs text-slate-500 hover:text-rose-600 underline font-medium px-2 py-1"
+                      >
+                        Сбросить ответ
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    {currentIndex < questions.length - 1 ? (
+                      <button
+                        onClick={handleNext}
+                        className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-md transition"
+                      >
+                        <span>Далее</span>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setShowConfirmModal(true)}
+                        className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition"
+                      >
+                        <span>Завершить тест</span>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="hidden sm:flex items-center justify-between text-xs text-slate-400 px-2">
+                <div>
+                  Подсказка: клавиши <kbd className="px-1.5 py-0.5 bg-slate-200 text-slate-700 rounded text-[11px]">1..4</kbd> / <kbd className="px-1.5 py-0.5 bg-slate-200 text-slate-700 rounded text-[11px]">A..D</kbd> выбирают ответ, <kbd className="px-1.5 py-0.5 bg-slate-200 text-slate-700 rounded text-[11px]">←</kbd> <kbd className="px-1.5 py-0.5 bg-slate-200 text-slate-700 rounded text-[11px]">→</kbd> листают вопросы.
+                </div>
+                <div>Отвечено: <span className="font-semibold text-slate-600">{answeredCount}</span> из {questions.length}</div>
+              </div>
+            </main>
+
+            {/* SIDEBAR: 1-40 QUESTION MATRIX */}
+            <aside className="hidden lg:block lg:col-span-4 space-y-4 sticky top-24">
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                    </svg>
+                    Карта вопросов ({questions.length})
+                  </h2>
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                    {progressPercent}%
+                  </span>
+                </div>
+
+                {/* Filter Tabs */}
+                <div className="grid grid-cols-4 gap-1 bg-slate-100 p-1 rounded-xl mb-4 text-[11px] font-semibold text-center">
+                  <button onClick={() => setFilterMode("all")} className={`py-1 rounded-lg transition ${filterMode === 'all' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}>Все</button>
+                  <button onClick={() => setFilterMode("answered")} className={`py-1 rounded-lg transition ${filterMode === 'answered' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-500'}`}>Отв.</button>
+                  <button onClick={() => setFilterMode("unanswered")} className={`py-1 rounded-lg transition ${filterMode === 'unanswered' ? 'bg-slate-300 text-slate-800 shadow-sm' : 'text-slate-500'}`}>Проп.</button>
+                  <button onClick={() => setFilterMode("bookmarked")} className={`py-1 rounded-lg transition ${filterMode === 'bookmarked' ? 'bg-amber-500 text-white shadow-sm' : 'text-slate-500'}`}>Флаг</button>
+                </div>
+
+                {/* 1-40 Question Grid */}
+                <div className="grid grid-cols-5 gap-2 max-h-[380px] overflow-y-auto pr-1">
+                  {questions.map((q, idx) => {
+                    const isAnswered = answers[q.id] !== undefined;
+                    const isCurrent = currentIndex === idx;
+                    const isFlagged = !!bookmarked[q.id];
+
+                    if (filterMode === 'answered' && !isAnswered) return null;
+                    if (filterMode === 'unanswered' && isAnswered) return null;
+                    if (filterMode === 'bookmarked' && !isFlagged) return null;
+
+                    let btnStyles = "bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200";
+
+                    if (isAnswered) {
+                      btnStyles = "bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 shadow-sm";
+                    }
+
+                    if (isCurrent) {
+                      btnStyles += " ring-2 ring-blue-600 ring-offset-1 font-extrabold scale-105 border-blue-600 z-10";
+                    }
+
+                    return (
+                      <button
+                        key={q.id}
+                        onClick={() => setCurrentIndex(idx)}
+                        className={`relative h-10 rounded-xl border text-xs font-semibold flex items-center justify-center transition-all ${btnStyles}`}
+                        title={`Вопрос ${q.id}`}
+                      >
+                        {q.id}
+                        {isFlagged && (
+                          <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full border-2 border-white shadow-sm" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Status Legend */}
+                <div className="border-t border-slate-200 mt-5 pt-4 space-y-2 text-xs">
+                  <div className="flex items-center justify-between text-slate-600">
+                    <span className="flex items-center gap-2">
+                      <span className="w-3.5 h-3.5 rounded-md bg-emerald-600 inline-block"></span>
+                      Отвечено:
+                    </span>
+                    <span className="font-bold text-emerald-700">{answeredCount}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-slate-600">
+                    <span className="flex items-center gap-2">
+                      <span className="w-3.5 h-3.5 rounded-md bg-slate-200 border border-slate-300 inline-block"></span>
+                      Пропущено:
+                    </span>
+                    <span className="font-bold text-slate-700">{unansweredCount}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-slate-600">
+                    <span className="flex items-center gap-2">
+                      <span className="w-3.5 h-3.5 rounded-md bg-amber-500 inline-block"></span>
+                      В закладках:
+                    </span>
+                    <span className="font-bold text-amber-600">{bookmarkedCount}</span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setShowConfirmModal(true)}
+                  className="w-full mt-5 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl font-semibold text-xs sm:text-sm transition flex items-center justify-center gap-2"
+                >
+                  Завершить тестирование
+                </button>
+              </div>
+            </aside>
+          </div>
+
+          {/* MOBILE DRAWER */}
+          {mobileDrawerOpen && (
+            <div className="fixed inset-0 z-50 lg:hidden flex justify-end">
+              <div
+                className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm"
+                onClick={() => setMobileDrawerOpen(false)}
+              />
+              <div className="relative w-80 max-w-full bg-white h-full shadow-2xl p-5 flex flex-col z-10 overflow-y-auto">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-200 mb-4">
+                  <h2 className="font-bold text-slate-900 text-base">Сетка вопросов</h2>
+                  <button onClick={() => setMobileDrawerOpen(false)} className="p-1 text-slate-400">✕</button>
+                </div>
+
+                <div className="grid grid-cols-5 gap-2 mb-6">
+                  {questions.map((q, idx) => {
+                    const isAnswered = answers[q.id] !== undefined;
+                    const isCurrent = currentIndex === idx;
+                    const isFlagged = !!bookmarked[q.id];
+
+                    let btnStyles = "bg-slate-100 text-slate-700";
+                    if (isAnswered) btnStyles = "bg-emerald-600 text-white";
+                    if (isCurrent) btnStyles += " ring-2 ring-blue-600 font-bold border-blue-600";
+
+                    return (
+                      <button
+                        key={q.id}
+                        onClick={() => {
+                          setCurrentIndex(idx);
+                          setMobileDrawerOpen(false);
+                        }}
+                        className={`relative h-10 rounded-xl border text-xs font-semibold flex items-center justify-center ${btnStyles}`}
+                      >
+                        {q.id}
+                        {isFlagged && <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full border-2 border-white" />}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="mt-auto pt-4 border-t border-slate-200">
+                  <button
+                    onClick={() => {
+                      setMobileDrawerOpen(false);
+                      setShowConfirmModal(true);
+                    }}
+                    className="w-full py-3 bg-rose-600 text-white rounded-xl font-bold text-sm"
+                  >
+                    Завершить тест
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* CALCULATOR */}
+          {showCalculator && (
+            <div className="fixed bottom-6 right-6 z-50 w-72 bg-slate-900 text-white rounded-2xl shadow-2xl border border-slate-700 p-4">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-800 mb-3">
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Калькулятор ЕНТ</div>
+                <button onClick={() => setShowCalculator(false)} className="text-slate-400 hover:text-white text-xs font-bold">✕</button>
+              </div>
+              <div className="bg-slate-950 rounded-xl p-3 text-right font-mono text-xl text-emerald-400 mb-3 overflow-x-auto border border-slate-800">
+                {calcDisplay}
+              </div>
+              <div className="grid grid-cols-4 gap-1.5 text-sm font-semibold">
+                <button onClick={handleCalcClear} className="col-span-2 p-2 bg-slate-800 hover:bg-slate-700 text-rose-400 rounded-lg">C</button>
+                <button onClick={() => handleCalcOp('/')} className="p-2 bg-slate-800 hover:bg-slate-700 text-blue-400 rounded-lg">÷</button>
+                <button onClick={() => handleCalcOp('*')} className="p-2 bg-slate-800 hover:bg-slate-700 text-blue-400 rounded-lg">×</button>
+
+                <button onClick={() => handleCalcDigit(7)} className="p-2 bg-slate-800/80 hover:bg-slate-700 rounded-lg">7</button>
+                <button onClick={() => handleCalcDigit(8)} className="p-2 bg-slate-800/80 hover:bg-slate-700 rounded-lg">8</button>
+                <button onClick={() => handleCalcDigit(9)} className="p-2 bg-slate-800/80 hover:bg-slate-700 rounded-lg">9</button>
+                <button onClick={() => handleCalcOp('-')} className="p-2 bg-slate-800 hover:bg-slate-700 text-blue-400 rounded-lg">−</button>
+
+                <button onClick={() => handleCalcDigit(4)} className="p-2 bg-slate-800/80 hover:bg-slate-700 rounded-lg">4</button>
+                <button onClick={() => handleCalcDigit(5)} className="p-2 bg-slate-800/80 hover:bg-slate-700 rounded-lg">5</button>
+                <button onClick={() => handleCalcDigit(6)} className="p-2 bg-slate-800/80 hover:bg-slate-700 rounded-lg">6</button>
+                <button onClick={() => handleCalcOp('+')} className="p-2 bg-slate-800 hover:bg-slate-700 text-blue-400 rounded-lg">+</button>
+
+                <button onClick={() => handleCalcDigit(1)} className="p-2 bg-slate-800/80 hover:bg-slate-700 rounded-lg">1</button>
+                <button onClick={() => handleCalcDigit(2)} className="p-2 bg-slate-800/80 hover:bg-slate-700 rounded-lg">2</button>
+                <button onClick={() => handleCalcDigit(3)} className="p-2 bg-slate-800/80 hover:bg-slate-700 rounded-lg">3</button>
+                <button onClick={handleCalcEqual} className="row-span-2 p-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg flex items-center justify-center font-bold">=</button>
+
+                <button onClick={() => handleCalcDigit(0)} className="col-span-2 p-2 bg-slate-800/80 hover:bg-slate-700 rounded-lg">0</button>
+                <button onClick={() => handleCalcDigit('.')} className="p-2 bg-slate-800/80 hover:bg-slate-700 rounded-lg">.</button>
+              </div>
+            </div>
+          )}
+
+          {/* CONFIRMATION MODAL */}
+          {showConfirmModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+              <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200">
+                <div className="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+
+                <h3 className="text-xl font-bold text-center text-slate-900 mb-2">
+                  Завершить тестирование?
+                </h3>
+                
+                <p className="text-sm text-center text-slate-500 mb-5">
+                  После подтверждения ваши ответы будут зафиксированы и пересданы для итоговой оценки.
+                </p>
+
+                <div className="bg-slate-50 rounded-xl p-3.5 mb-5 space-y-2 text-xs sm:text-sm">
+                  <div className="flex justify-between text-slate-600">
+                    <span>Всего вопросов:</span>
+                    <span className="font-bold text-slate-900">{questions.length}</span>
+                  </div>
+                  <div className="flex justify-between text-emerald-700">
+                    <span>Отвечено:</span>
+                    <span className="font-bold">{answeredCount}</span>
+                  </div>
+                  <div className="flex justify-between text-rose-600">
+                    <span>Не отвечено:</span>
+                    <span className="font-bold">{unansweredCount}</span>
+                  </div>
+                  {bookmarkedCount > 0 && (
+                    <div className="flex justify-between text-amber-600">
+                      <span>Вопросов в закладках:</span>
+                      <span className="font-bold">{bookmarkedCount}</span>
+                    </div>
+                  )}
+                </div>
+
+                {unansweredCount > 0 && (
+                  <div className="mb-5 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-start gap-2">
+                    <span>У вас осталось <b>{unansweredCount}</b> неотвеченных вопросов. Вы можете вернуться к тесту и дорешать их.</span>
+                  </div>
+                )}
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowConfirmModal(false)}
+                    className="flex-1 py-2.5 px-4 rounded-xl border border-slate-300 text-slate-700 font-semibold text-sm hover:bg-slate-100 transition"
+                  >
+                    Вернуться к тесту
+                  </button>
+                  <button
+                    onClick={handleFinishTest}
+                    className="flex-1 py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm shadow transition"
+                  >
+                    Да, завершить
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+</html>
