@@ -1,10 +1,10 @@
 import React from 'react';
-import EntTestingApp from './components/EntTestingApp';
+import EntPlatform from './components/EntPlatform';
 
 export default function App() {
   return (
     <div className="w-full min-h-screen">
-      <EntTestingApp subjectName="Математическая грамотность (ЕНТ)" />
+      <EntPlatform />
     </div>
   );
 }
