@@ -8,6 +8,7 @@ interface Props {
   bookmarked: Record<string, boolean>;
   onSelectIndex: (idx: number) => void;
   language: 'ru' | 'kk';
+  onClose?: () => void;
 }
 
 export default function QuestionGrid({
@@ -16,7 +17,8 @@ export default function QuestionGrid({
   answers,
   bookmarked,
   onSelectIndex,
-  language
+  language,
+  onClose
 }: Props) {
   const answeredCount = questions.filter(
     q => answers[q.id] && answers[q.id].length > 0
@@ -36,13 +38,26 @@ export default function QuestionGrid({
             {language === 'kk' ? 'Сұрақтар кестесі' : 'Сетка вопросов'} ({questions.length})
           </h4>
         </div>
-        <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-          {answeredCount}/{questions.length}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+            {answeredCount}/{questions.length}
+          </span>
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
+              title="Закрыть сетку"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* FULL MATRIX OF BUTTONS (1–20 or 1–40) */}
-      <div className="grid grid-cols-5 sm:grid-cols-5 gap-2 max-h-[380px] overflow-y-auto pr-1">
+      <div className="grid grid-cols-5 sm:grid-cols-5 gap-2 max-h-[360px] sm:max-h-[380px] overflow-y-auto pr-1">
         {questions.map((q, idx) => {
           const isAnswered = answers[q.id] && answers[q.id].length > 0;
           const isCurrent = currentIndex === idx;
@@ -62,8 +77,11 @@ export default function QuestionGrid({
           return (
             <button
               key={q.id}
-              onClick={() => onSelectIndex(idx)}
-              className={`relative h-10 rounded-xl text-xs font-bold border transition-all flex items-center justify-center ${cellStyle}`}
+              onClick={() => {
+                onSelectIndex(idx);
+                if (onClose) onClose();
+              }}
+              className={`relative h-11 sm:h-10 rounded-xl text-xs font-bold border transition-all flex items-center justify-center active:scale-95 ${cellStyle}`}
               title={`№${idx + 1} (${isAnswered ? 'Отвечен' : 'Не отвечен'})`}
             >
               <span>{idx + 1}</span>

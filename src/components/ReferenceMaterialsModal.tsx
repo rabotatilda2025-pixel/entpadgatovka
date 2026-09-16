@@ -57,50 +57,50 @@ export default function ReferenceMaterialsModal({ language, onClose }: Props) {
       <div className="bg-white rounded-3xl shadow-2xl max-w-5xl w-full h-[88vh] flex flex-col border border-slate-200 overflow-hidden font-sans">
         
         {/* Modal Top Bar */}
-        <div className="bg-[#0f2444] text-white px-6 py-4 flex items-center justify-between gap-4 flex-shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
-              📖
-            </div>
-            <h3 className="font-bold text-base sm:text-lg">
-              {language === 'kk' ? 'Анықтамалық материалдар (ҰБТ)' : 'Справочные материалы (ЕНТ)'}
-            </h3>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {/* Tabs */}
-            <div className="flex bg-blue-950/70 p-1 rounded-xl border border-blue-800 text-xs font-semibold">
-              <button
-                onClick={() => setActiveTab('mendeleev')}
-                className={`px-3 py-1.5 rounded-lg transition ${activeTab === 'mendeleev' ? 'bg-blue-600 text-white' : 'text-blue-300 hover:text-white'}`}
-              >
-                {language === 'kk' ? 'Менделеев кестесі' : 'Таблица Менделеева'}
-              </button>
-              <button
-                onClick={() => setActiveTab('solubility')}
-                className={`px-3 py-1.5 rounded-lg transition ${activeTab === 'solubility' ? 'bg-blue-600 text-white' : 'text-blue-300 hover:text-white'}`}
-              >
-                {language === 'kk' ? 'Ерігіштік кестесі' : 'Таблица растворимости'}
-              </button>
-              <button
-                onClick={() => setActiveTab('formulas')}
-                className={`px-3 py-1.5 rounded-lg transition ${activeTab === 'formulas' ? 'bg-blue-600 text-white' : 'text-blue-300 hover:text-white'}`}
-              >
-                {language === 'kk' ? 'Формулалар (Физ / Мат)' : 'Формулы (Физ / Мат)'}
-              </button>
+        <div className="bg-[#0f2444] text-white px-4 sm:px-6 py-3 sm:py-4 flex flex-col gap-3 flex-shrink-0 border-b border-blue-900/60">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                📖
+              </div>
+              <h3 className="font-bold text-sm sm:text-base md:text-lg truncate">
+                {language === 'kk' ? 'Анықтамалық материалдар (ҰБТ)' : 'Справочные материалы (ЕНТ)'}
+              </h3>
             </div>
 
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white font-bold ml-2 transition"
+              className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white font-bold transition flex-shrink-0"
             >
               ✕
+            </button>
+          </div>
+
+          {/* Responsive Tabs Strip */}
+          <div className="flex bg-blue-950/80 p-1 rounded-xl border border-blue-800 text-xs font-semibold overflow-x-auto scrollbar-none gap-1">
+            <button
+              onClick={() => setActiveTab('mendeleev')}
+              className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition flex-1 sm:flex-initial text-center ${activeTab === 'mendeleev' ? 'bg-blue-600 text-white' : 'text-blue-300 hover:text-white'}`}
+            >
+              {language === 'kk' ? 'Менделеев' : 'Таблица Менделеева'}
+            </button>
+            <button
+              onClick={() => setActiveTab('solubility')}
+              className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition flex-1 sm:flex-initial text-center ${activeTab === 'solubility' ? 'bg-blue-600 text-white' : 'text-blue-300 hover:text-white'}`}
+            >
+              {language === 'kk' ? 'Ерігіштік' : 'Растворимость'}
+            </button>
+            <button
+              onClick={() => setActiveTab('formulas')}
+              className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition flex-1 sm:flex-initial text-center ${activeTab === 'formulas' ? 'bg-blue-600 text-white' : 'text-blue-300 hover:text-white'}`}
+            >
+              {language === 'kk' ? 'Формулалар (Физ / Мат)' : 'Формулы (Физ / Мат)'}
             </button>
           </div>
         </div>
 
         {/* Modal Body */}
-        <div className="flex-1 overflow-y-auto p-5 sm:p-6 bg-slate-50">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-50">
           
           {/* TAB 1: MENDELEEV PERIODIC TABLE */}
           {activeTab === 'mendeleev' && (

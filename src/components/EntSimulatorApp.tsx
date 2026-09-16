@@ -66,6 +66,7 @@ export default function EntSimulatorApp() {
   const [showCalculator, setShowCalculator] = useState(false);
   const [showReference, setShowReference] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showMobileGridDrawer, setShowMobileGridDrawer] = useState(false);
 
   // Mistakes bank in localStorage
   const [mistakes, setMistakes] = useState<MistakeRecord[]>(() => {
@@ -287,29 +288,26 @@ export default function EntSimulatorApp() {
       
       {/* 1. TOP HEADER (U-Study / NTC Standard) */}
       <header className="bg-[#0f2444] text-white sticky top-0 z-40 shadow-xl border-b border-blue-900/60">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-0 min-h-[56px] sm:h-20 flex items-center justify-between gap-2 sm:gap-4">
           
           {/* Logo & Direction Selector */}
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-black text-xl shadow-md border border-white/20 flex-shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-black text-lg sm:text-xl shadow-md border border-white/20 flex-shrink-0">
               ЕНТ
             </div>
 
-            <div className="truncate">
-              <div className="flex items-center gap-2">
-                <h1 className="text-sm sm:text-base font-black truncate text-white">
-                  {language === 'kk' ? 'Мемлекеттік ҰБТ симуляторы' : 'Симулятор ЕНТ 2026'}
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <h1 className="text-xs sm:text-base font-black truncate text-white">
+                  {language === 'kk' ? 'Мемлекеттік ҰБТ' : 'Симулятор ЕНТ 2026'}
                 </h1>
-                <span className="hidden lg:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                <span className="hidden xl:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                   120 сұрақ / 140 балл
                 </span>
               </div>
 
               {/* Direction Dropdown */}
-              <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-[11px] text-blue-300 font-semibold hidden sm:inline">
-                  {language === 'kk' ? 'Бағыт:' : 'Направление:'}
-                </span>
+              <div className="flex items-center gap-1.5 mt-0.5">
                 <select
                   value={directionId}
                   disabled={!isExamCompleted && Object.keys(answers).length > 0}
@@ -319,7 +317,7 @@ export default function EntSimulatorApp() {
                     setCurrentQuestionIndex(0);
                     setActiveSubjectId('history_kz');
                   }}
-                  className="bg-blue-950/80 border border-blue-700/80 rounded-lg px-2 py-0.5 text-xs text-white font-bold focus:outline-none focus:ring-1 focus:ring-blue-400"
+                  className="bg-blue-950/90 border border-blue-700/80 rounded-lg px-2 py-0.5 text-[11px] sm:text-xs text-white font-bold focus:outline-none focus:ring-1 focus:ring-blue-400 max-w-[140px] sm:max-w-none truncate"
                 >
                   {DIRECTIONS_CONFIG.map(dir => (
                     <option key={dir.id} value={dir.id}>
@@ -332,25 +330,26 @@ export default function EntSimulatorApp() {
           </div>
 
           {/* Quick Tools & Timer & Language Switcher */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
             
             {/* View Switcher: Exam vs Mistakes */}
-            <div className="hidden md:flex bg-blue-950/80 p-1 rounded-xl border border-blue-800 text-xs font-bold">
+            <div className="flex bg-blue-950/80 p-0.5 sm:p-1 rounded-xl border border-blue-800 text-[11px] sm:text-xs font-bold">
               <button
                 onClick={() => setViewMode('exam')}
-                className={`px-3 py-1.5 rounded-lg transition ${
+                className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg transition ${
                   viewMode === 'exam' ? 'bg-blue-600 text-white' : 'text-blue-200 hover:text-white'
                 }`}
               >
-                {language === 'kk' ? 'Емтихан' : 'Экзамен'}
+                {language === 'kk' ? 'Тест' : 'Тест'}
               </button>
               <button
                 onClick={() => setViewMode('mistakes')}
-                className={`px-3 py-1.5 rounded-lg transition relative ${
+                className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg transition relative ${
                   viewMode === 'mistakes' ? 'bg-blue-600 text-white' : 'text-blue-200 hover:text-white'
                 }`}
               >
-                {language === 'kk' ? 'Қатемен жұмыс' : 'Ошибки'}
+                <span className="hidden sm:inline">{language === 'kk' ? 'Қатемен жұмыс' : 'Ошибки'}</span>
+                <span className="sm:hidden">❌</span>
                 {mistakes.length > 0 && (
                   <span className="ml-1 px-1.5 py-0.2 rounded-full bg-rose-500 text-white text-[10px]">
                     {mistakes.length}
@@ -362,17 +361,17 @@ export default function EntSimulatorApp() {
             {/* Reference Materials Button */}
             <button
               onClick={() => setShowReference(true)}
-              className="p-2 sm:px-3 sm:py-2 rounded-xl bg-blue-950/70 hover:bg-blue-900/80 border border-blue-800 text-blue-200 text-xs font-bold flex items-center gap-1.5 transition"
+              className="p-1.5 sm:px-3 sm:py-2 rounded-xl bg-blue-950/70 hover:bg-blue-900/80 border border-blue-800 text-blue-200 text-xs font-bold flex items-center gap-1.5 transition active:scale-95"
               title="Справочные материалы"
             >
               <span>📖</span>
-              <span className="hidden sm:inline">{language === 'kk' ? 'Анықтама' : 'Справочник'}</span>
+              <span className="hidden md:inline">{language === 'kk' ? 'Анықтама' : 'Справочник'}</span>
             </button>
 
             {/* Calculator Button */}
             <button
               onClick={() => setShowCalculator(!showCalculator)}
-              className={`p-2 sm:px-3 sm:py-2 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition ${
+              className={`p-1.5 sm:px-3 sm:py-2 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition active:scale-95 ${
                 showCalculator
                   ? 'bg-blue-600 border-blue-400 text-white'
                   : 'bg-blue-950/70 hover:bg-blue-900/80 border-blue-800 text-blue-200'
@@ -380,18 +379,18 @@ export default function EntSimulatorApp() {
               title="Калькулятор"
             >
               <span>🧮</span>
-              <span className="hidden sm:inline">{language === 'kk' ? 'Калькулятор' : 'Калькулятор'}</span>
+              <span className="hidden md:inline">{language === 'kk' ? 'Калькулятор' : 'Калькулятор'}</span>
             </button>
 
             {/* 240-MINUTE COUNTDOWN TIMER */}
-            <div className={`px-3 py-1.5 sm:py-2 rounded-xl border font-mono font-bold text-xs sm:text-sm flex items-center gap-2 ${
+            <div className={`px-2.5 sm:px-3 py-1 sm:py-2 rounded-xl border font-mono font-bold text-xs sm:text-sm flex items-center gap-1.5 ${
               timeLeft < 600
                 ? 'bg-rose-600 border-rose-400 text-white animate-pulse'
                 : timeLeft < 1800
                 ? 'bg-amber-600 border-amber-400 text-white'
                 : 'bg-blue-950 border-blue-700 text-emerald-400'
             }`}>
-              <span>⏱️</span>
+              <span className="text-[11px] sm:text-sm">⏱️</span>
               <span>{formattedTime}</span>
             </div>
 
@@ -399,7 +398,7 @@ export default function EntSimulatorApp() {
             <div className="flex bg-blue-950 border border-blue-700 rounded-xl p-0.5">
               <button
                 onClick={() => setLanguage('kk')}
-                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition ${
+                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-[11px] sm:text-xs font-bold transition ${
                   language === 'kk' ? 'bg-blue-600 text-white' : 'text-blue-300 hover:text-white'
                 }`}
               >
@@ -407,7 +406,7 @@ export default function EntSimulatorApp() {
               </button>
               <button
                 onClick={() => setLanguage('ru')}
-                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition ${
+                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-[11px] sm:text-xs font-bold transition ${
                   language === 'ru' ? 'bg-blue-600 text-white' : 'text-blue-300 hover:text-white'
                 }`}
               >
@@ -417,10 +416,10 @@ export default function EntSimulatorApp() {
           </div>
         </div>
 
-        {/* 5 SUBJECTS TABS STRIP */}
+        {/* 5 SUBJECTS TABS STRIP - HORIZONTAL TOUCH SCROLL */}
         {viewMode === 'exam' && (
-          <div className="bg-[#0b1d38] px-4 sm:px-6 py-2 overflow-x-auto border-t border-blue-950">
-            <div className="max-w-7xl mx-auto flex items-center gap-2">
+          <div className="bg-[#0b1d38] px-3 sm:px-6 py-2 overflow-x-auto border-t border-blue-950 flex scrollbar-none snap-x touch-pan-x">
+            <div className="max-w-7xl mx-auto flex items-center gap-2 flex-nowrap">
               {activeSubjectList.map((sId, idx) => {
                 const isActive = activeSubjectId === sId;
                 const subMeta = SUBJECTS_METADATA[sId];
@@ -436,9 +435,9 @@ export default function EntSimulatorApp() {
                       setActiveSubjectId(sId);
                       setCurrentQuestionIndex(0);
                     }}
-                    className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition border ${
+                    className={`flex items-center gap-2 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold whitespace-nowrap transition border snap-start flex-shrink-0 active:scale-95 ${
                       isActive
-                        ? 'bg-blue-600 text-white border-blue-500 shadow-md scale-102'
+                        ? 'bg-blue-600 text-white border-blue-500 shadow-md'
                         : 'bg-blue-950/60 text-blue-200 hover:text-white hover:bg-blue-900 border-blue-900/60'
                     }`}
                   >
@@ -462,7 +461,7 @@ export default function EntSimulatorApp() {
       </header>
 
       {/* 2. MAIN VIEW */}
-      <main className="flex-1 w-full">
+      <main className="flex-1 w-full pb-20 lg:pb-8">
         {viewMode === 'mistakes' ? (
           <MistakesReviewPage
             language={language}
@@ -474,10 +473,10 @@ export default function EntSimulatorApp() {
           />
         ) : (
           /* ACTIVE EXAM SIMULATOR */
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6 grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
             
             {/* Left/Center: Question Workspace (8 cols) */}
-            <div className="lg:col-span-8">
+            <div className="lg:col-span-8 col-span-1">
               {currentQuestion && (
                 <QuestionWorkspace
                   question={currentQuestion}
@@ -502,8 +501,8 @@ export default function EntSimulatorApp() {
               )}
             </div>
 
-            {/* Right: Full Question Grid (1–20 or 1–40) (4 cols) */}
-            <div className="lg:col-span-4 sticky top-36">
+            {/* Right: Full Question Grid (1–20 or 1–40) (HIDDEN ON MOBILE, SHOWN ON DESKTOP) */}
+            <div className="hidden lg:block lg:col-span-4 sticky top-36">
               <QuestionGrid
                 questions={currentSubjectQuestions}
                 currentIndex={currentQuestionIndex}
@@ -516,6 +515,99 @@ export default function EntSimulatorApp() {
           </div>
         )}
       </main>
+
+      {/* MOBILE FIXED BOTTOM NAVIGATION BAR */}
+      {viewMode === 'exam' && !isExamCompleted && (
+        <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-3 py-2.5 shadow-2xl flex items-center justify-between gap-2">
+          {/* Back button */}
+          <button
+            onClick={handlePrevQuestion}
+            disabled={activeSubjectList.indexOf(activeSubjectId) === 0 && currentQuestionIndex === 0}
+            className={`p-2.5 rounded-xl border flex items-center justify-center font-bold text-xs ${
+              activeSubjectList.indexOf(activeSubjectId) === 0 && currentQuestionIndex === 0
+                ? 'opacity-40 bg-slate-100 text-slate-400 border-slate-200'
+                : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300 shadow-sm active:scale-95'
+            }`}
+            title={language === 'kk' ? 'Артқа' : 'Назад'}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          {/* Bookmark Toggle */}
+          <button
+            onClick={handleToggleBookmark}
+            className={`p-2.5 rounded-xl border flex items-center justify-center text-xs transition active:scale-95 ${
+              currentQuestion && bookmarked[currentQuestion.id]
+                ? 'bg-amber-100 border-amber-300 text-amber-600'
+                : 'bg-white border-slate-300 text-slate-500'
+            }`}
+            title="Закладка"
+          >
+            <svg className="w-5 h-5" fill={currentQuestion && bookmarked[currentQuestion.id] ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+            </svg>
+          </button>
+
+          {/* Question Matrix Drawer Trigger */}
+          <button
+            onClick={() => setShowMobileGridDrawer(true)}
+            className="flex-1 py-2.5 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-900 font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-98"
+          >
+            <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+            </svg>
+            <span>{language === 'kk' ? 'Сұрақтар' : 'Сетка'}: {currentQuestionIndex + 1}/{currentSubjectQuestions.length}</span>
+          </button>
+
+          {/* Forward button */}
+          <button
+            onClick={handleNextQuestion}
+            className="p-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md active:scale-95 flex items-center justify-center"
+            title={language === 'kk' ? 'Алға' : 'Вперед'}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+
+          {/* Finish Exam button */}
+          <button
+            onClick={() => setShowConfirmModal(true)}
+            className="p-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md active:scale-95 flex items-center justify-center"
+            title={language === 'kk' ? 'Аяқтау' : 'Завершить'}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+            </svg>
+          </button>
+        </nav>
+      )}
+
+      {/* MOBILE QUESTION GRID BOTTOM SHEET DRAWER */}
+      {showMobileGridDrawer && (
+        <div className="fixed inset-0 z-50 flex flex-col justify-end bg-slate-950/70 backdrop-blur-sm lg:hidden animate-in fade-in">
+          {/* Backdrop click area */}
+          <div className="flex-1" onClick={() => setShowMobileGridDrawer(false)} />
+
+          <div className="bg-white rounded-t-3xl shadow-2xl p-4 max-h-[80vh] overflow-y-auto border-t border-slate-200 animate-in slide-in-from-bottom duration-200">
+            <div className="w-12 h-1.5 bg-slate-300 rounded-full mx-auto mb-3" />
+            <QuestionGrid
+              questions={currentSubjectQuestions}
+              currentIndex={currentQuestionIndex}
+              answers={answers}
+              bookmarked={bookmarked}
+              onSelectIndex={(idx) => {
+                setCurrentQuestionIndex(idx);
+                setShowMobileGridDrawer(false);
+              }}
+              language={language}
+              onClose={() => setShowMobileGridDrawer(false)}
+            />
+          </div>
+        </div>
+      )}
 
       {/* 3. MODALS */}
       {showCalculator && (

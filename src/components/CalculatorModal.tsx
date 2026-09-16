@@ -60,7 +60,7 @@ export default function CalculatorModal({ onClose }: Props) {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 w-72 bg-slate-900 text-white rounded-3xl shadow-2xl border border-slate-700 p-4 font-sans animate-in fade-in">
+    <div className="fixed inset-x-4 bottom-20 sm:bottom-6 sm:right-6 sm:left-auto z-50 sm:w-72 max-w-sm mx-auto sm:mx-0 bg-slate-900 text-white rounded-3xl shadow-2xl border border-slate-700 p-4 font-sans animate-in fade-in">
       <div className="flex items-center justify-between pb-2 border-b border-slate-800 mb-3">
         <div className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
           <span>🧮</span> Калькулятор ЕНТ
