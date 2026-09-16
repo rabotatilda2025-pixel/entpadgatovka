@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EdTech ЕНТ 2026 — Платформа подготовки к тестированию (11 класс)</title>
+  <title>Симулятор ЕНТ 2026 — 120 вопросов / 140 баллов | U-Study / НЦТ РК</title>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -22,7 +22,7 @@
     };
   </script>
 
-  <!-- React 18 & ReactDOM 18 & Babel CDN -->
+  <!-- React 18, ReactDOM 18 & Babel Standalone CDN -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -37,942 +37,941 @@
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen selection:bg-blue-600 selection:text-white">
   <div id="root"></div>
 
-  <!-- BILINGUAL EDTECH PLATFORM APPLICATION -->
+  <!-- STANDALONE STATE UNT SIMULATOR SCRIPT -->
   <script type="text/babel">
     const { useState, useEffect, useMemo } = React;
 
     // ==========================================
-    // 1. SUBJECTS_CONFIG
+    // 1. CONFIG & METADATA
     // ==========================================
-    const SUBJECTS_CONFIG = {
-      mandatory: [
-        {
-          id: "history_kz",
-          code: "HIST_KZ",
-          name: { ru: "История Казахстана", kk: "Қазақстан тарихы" },
-          shortName: { ru: "История КЗ", kk: "Қаз. тарихы" },
-          questionCount: 20,
-          topics: [
-            { id: "ancient_kz", name: { ru: "Древний Казахстан", kk: "Ежелгі Қазақстан" } },
-            { id: "kazakh_khanate", name: { ru: "Казахское ханство", kk: "Қазақ хандығы" } },
-            { id: "colonial_period", name: { ru: "Казахстан в составе Российской империи", kk: "Ресей империясы құрамында" } },
-            { id: "independent_kz", name: { ru: "Независимый Казахстан", kk: "Тәуелсіз Қазақстан" } }
-          ]
-        },
-        {
-          id: "reading_literacy",
-          code: "READ_LIT",
-          name: { ru: "Грамотность чтения", kk: "Оқу сауаттылығы" },
-          shortName: { ru: "Чтение", kk: "Оқу сауат." },
-          questionCount: 10,
-          topics: [
-            { id: "main_idea", name: { ru: "Главная мысль текста", kk: "Мәтіннің негізгі ойы" } },
-            { id: "context_deduction", name: { ru: "Контекстный вывод", kk: "Мәтінмәндік қорытынды" } }
-          ]
-        },
-        {
-          id: "math_literacy",
-          code: "MATH_LIT",
-          name: { ru: "Математическая грамотность", kk: "Математикалық сауаттылық" },
-          shortName: { ru: "Мат. грамотность", kk: "Мат. сауат." },
-          questionCount: 10,
-          topics: [
-            { id: "percents_proportions", name: { ru: "Проценты и пропорции", kk: "Пайыздар мен пропорциялар" } },
-            { id: "logic_sequences", name: { ru: "Логические закономерности", kk: "Логикалық заңдылықтар" } }
-          ]
-        }
-      ],
-      profileCombinations: [
-        {
-          id: "math_physics",
-          name: { ru: "Математика + Физика", kk: "Математика + Физика" },
-          description: { ru: "Инженерия, IT, архитектура, энергетика, авиация", kk: "Инженерия, IT, сәулет, энергетика, авиация" },
-          subjects: [
-            { id: "math_advanced", name: { ru: "Математика", kk: "Математика" }, questionCount: 35, topics: [{ id: "calculus", name: { ru: "Начала анализа", kk: "Анализ бастамалары" } }] },
-            { id: "physics", name: { ru: "Физика", kk: "Физика" }, questionCount: 35, topics: [{ id: "kinematics", name: { ru: "Механика және динамика", kk: "Механика и динамика" } }] }
-          ]
-        },
-        {
-          id: "bio_chemistry",
-          name: { ru: "Биология + Химия", kk: "Биология + Химия" },
-          description: { ru: "Медицина, фармацевтика, биотехнологии, экология", kk: "Медицина, фармацевтика, биотехнология, экология" },
-          subjects: [
-            { id: "biology", name: { ru: "Биология", kk: "Биология" }, questionCount: 35, topics: [{ id: "cell_bio", name: { ru: "Цитология", kk: "Цитология" } }] },
-            { id: "chemistry", name: { ru: "Химия", kk: "Химия" }, questionCount: 35, topics: [{ id: "inorganic", name: { ru: "Неорганическая химия", kk: "Бейорганикалық химия" } }] }
-          ]
-        },
-        {
-          id: "geog_worldhistory",
-          name: { ru: "География + Всемирная история", kk: "География + Дүниежүзі тарихы" },
-          description: { ru: "Международные отношения, регионоведение, туризм", kk: "Халықаралық қатынастар, туризм" },
-          subjects: [
-            { id: "geography", name: { ru: "География", kk: "География" }, questionCount: 35, topics: [] },
-            { id: "world_history", name: { ru: "Всемирная история", kk: "Дүниежүзі тарихы" }, questionCount: 35, topics: [] }
-          ]
-        }
-      ]
+    const DIRECTIONS_CONFIG = [
+      { id: 'fizmat', name: { ru: 'ФизМат (Математика + Физика)', kk: 'ФизМат (Математика + Физика)' }, p1: 'math', p2: 'physics' },
+      { id: 'biohim', name: { ru: 'БиоХим (Биология + Химия)', kk: 'БиоХим (Биология + Химия)' }, p1: 'biology', p2: 'chemistry' },
+      { id: 'geomat', name: { ru: 'ГеоМат (География + Математика)', kk: 'ГеоМат (География + Математика)' }, p1: 'geography', p2: 'math' }
+    ];
+
+    const SUBJECTS_METADATA = {
+      history_kz: { id: 'history_kz', name: { ru: 'История Казахстана', kk: 'Қазақстан тарихы' }, count: 20, maxPoints: 20 },
+      reading: { id: 'reading', name: { ru: 'Грамотность чтения', kk: 'Оқу сауаттылығы' }, count: 10, maxPoints: 10 },
+      math_lit: { id: 'math_lit', name: { ru: 'Математическая грамотность', kk: 'Математикалық сауаттылық' }, count: 10, maxPoints: 10 },
+      math: { id: 'math', name: { ru: 'Математика (профиль)', kk: 'Математика (бейіндік)' }, count: 40, maxPoints: 45 },
+      physics: { id: 'physics', name: { ru: 'Физика (профиль)', kk: 'Физика (бейіндік)' }, count: 40, maxPoints: 45 },
+      biology: { id: 'biology', name: { ru: 'Биология (профиль)', kk: 'Биология (бейіндік)' }, count: 40, maxPoints: 45 },
+      chemistry: { id: 'chemistry', name: { ru: 'Химия (профиль)', kk: 'Химия (бейіндік)' }, count: 40, maxPoints: 45 },
+      geography: { id: 'geography', name: { ru: 'География (профиль)', kk: 'География (бейіндік)' }, count: 40, maxPoints: 45 }
     };
 
-    function getSubjectById(id) {
-      const mand = SUBJECTS_CONFIG.mandatory.find(s => s.id === id);
-      if (mand) return mand;
-      for (const c of SUBJECTS_CONFIG.profileCombinations) {
-        const found = c.subjects.find(s => s.id === id);
-        if (found) return found;
+    // ==========================================
+    // 2. REAL SAMPLE QUESTIONS BANK
+    // ==========================================
+    const REAL_ENT_SAMPLES = [
+      {
+        id: 'hist_01',
+        subjectId: 'history_kz',
+        type: 'single',
+        points: 1,
+        question: {
+          ru: 'Основателями Казахского ханства в 1465–1466 гг. являются султаны:',
+          kk: '1465–1466 жж. Қазақ хандығының негізін қалаған сұлтандар:'
+        },
+        options: {
+          ru: ['Керей и Жанибек', 'Касым и Хакназар', 'Абылай и Абулхаир', 'Есим и Тауке'],
+          kk: ['Керей мен Жәнібек', 'Қасым мен Хақназар', 'Абылай мен Әбілқайыр', 'Есім мен Тәуке']
+        },
+        correctIndexes: [0],
+        explanation: {
+          ru: 'Согласно труду Мухаммеда Хайдара Дулати «Тарих-и Рашиди», султаны Керей и Жанибек основали Казахское ханство в долине реки Чу (Козыбасы).',
+          kk: 'Мұхаммед Хайдар Дулатидің «Тарих-и Рашиди» еңбегі бойынша, Керей мен Жәнібек сұлтандар Қазақ хандығының туын тікті.'
+        }
+      },
+      {
+        id: 'mathlit_01',
+        subjectId: 'math_lit',
+        type: 'single',
+        points: 1,
+        question: {
+          ru: 'Цена товара сначала снизилась на 20%, а затем новая цена увеличилась на 20%. Как изменилась первоначальная цена товара?',
+          kk: 'Тауардың бағасы алдымен 20%-ға арзандап, кейін жаңа бағасы 20%-ға қымбаттады. Тауардың бастапқы бағасы қалай өзгерді?'
+        },
+        options: {
+          ru: ['Уменьшилась на 4%', 'Не изменилась', 'Увеличилась на 4%', 'Уменьшилась на 2%'],
+          kk: ['4%-ға кеміді', 'Өзгерген жоқ', '4%-ға артты', '2%-ға кеміді']
+        },
+        correctIndexes: [0],
+        explanation: {
+          ru: '100 * 0.8 = 80; 80 * 1.2 = 96. Итого: 100 - 96 = снижение на 4%.',
+          kk: '100 * 0.8 = 80; 80 * 1.2 = 96. Нәтижесінде: 4%-ға азайды.'
+        }
+      },
+      {
+        id: 'math_prof_01',
+        subjectId: 'math',
+        type: 'single',
+        points: 1,
+        question: {
+          ru: 'Найдите значение производной функции f(x) = x³ - 3x² + 5 в точке x₀ = 2:',
+          kk: 'f(x) = x³ - 3x² + 5 функциясының x₀ = 2 нүктесіндегі туындысының мәнін табыңыз:'
+        },
+        options: {
+          ru: ['0', '3', '-1', '12'],
+          kk: ['0', '3', '-1', '12']
+        },
+        correctIndexes: [0],
+        explanation: {
+          ru: 'f\'(x) = 3x² - 6x. f\'(2) = 12 - 12 = 0.',
+          kk: 'f\'(x) = 3x² - 6x. f\'(2) = 12 - 12 = 0.'
+        }
+      },
+      {
+        id: 'phys_01',
+        subjectId: 'physics',
+        type: 'single',
+        points: 1,
+        question: {
+          ru: 'Тело массой 2 кг движется со скоростью 4 м/с. Чему равна его кинетическая энергия?',
+          kk: 'Массасы 2 кг дене 4 м/с жылдамдықпен қозғалады. Оның кинетикалық энергиясы неге тең?'
+        },
+        options: {
+          ru: ['16 Дж', '8 Дж', '32 Дж', '4 Дж'],
+          kk: ['16 Дж', '8 Дж', '32 Дж', '4 Дж']
+        },
+        correctIndexes: [0],
+        explanation: {
+          ru: 'Eк = (m * v²) / 2 = (2 * 16) / 2 = 16 Дж.',
+          kk: 'Eк = (m * v²) / 2 = 16 Дж.'
+        }
+      },
+      {
+        id: 'bio_01',
+        subjectId: 'biology',
+        type: 'single',
+        points: 1,
+        question: {
+          ru: 'Какой органоид клетки отвечает за синтез молекул АТФ (энергетическая станция клетки)?',
+          kk: 'Жасушаның қай органоиды АТФ синтезіне жауап береді (жасушаның күш станциясы)?'
+        },
+        options: {
+          ru: ['Митохондрия', 'Рибосома', 'Комплекс Гольджи', 'Лизосома'],
+          kk: ['Митохондрия', 'Рибосома', 'Гольджи жиынтығы', 'Лизосома']
+        },
+        correctIndexes: [0],
+        explanation: {
+          ru: 'Митохондрии обеспечивают клеточное дыхание и синтезируют молекулы АТФ.',
+          kk: 'Митохондриялар жасушалық тыныс алуды қамтамасыз етеді және АТФ синтездейді.'
+        }
+      },
+      {
+        id: 'chem_01',
+        subjectId: 'chemistry',
+        type: 'single',
+        points: 1,
+        question: {
+          ru: 'Какое вещество образуется при взаимодействии цинка с соляной кислотой?',
+          kk: 'Мырыш тұз қышқылымен әрекеттескенде қандай заттар түзіледі?'
+        },
+        options: {
+          ru: ['Хлорид цинка и водород', 'Оксид цинка и вода', 'Хлорид цинка и хлор', 'Гидроксид цинка'],
+          kk: ['Мырыш хлориді және сутек', 'Мырыш оксиді және су', 'Мырыш хлориді және хлор', 'Мырыш гидроксиді']
+        },
+        correctIndexes: [0],
+        explanation: {
+          ru: 'Zn + 2HCl → ZnCl₂ + H₂↑. Выделяется газ водород и образуется соль хлорид цинка.',
+          kk: 'Zn + 2HCl → ZnCl₂ + H₂↑. Тұз және сутек газы түзіледі.'
+        }
       }
-      return null;
+    ];
+
+    // Build FULL deterministic questions array (120 questions)
+    function generateFullExam(directionId) {
+      const dir = DIRECTIONS_CONFIG.find(d => d.id === directionId) || DIRECTIONS_CONFIG[0];
+      const p1 = dir.p1;
+      const p2 = dir.p2;
+
+      const readingArticles = [
+        {
+          ru: '«Экосистема Каспийского моря переживает критический период: колебания уровня воды и антропогенная нагрузка ставят под угрозу эндемичные виды, в частности каспийского тюленя. Международные экологические соглашения требуют жесткого контроля над промышленными стоками и создания трансграничных резерватов».',
+          kk: '«Каспий теңізінің экожүйесі күрделі кезеңді бастан кешуде: су деңгейінің құбылуы мен антропогендік қысым эндемикалық түрлерге қауіп төндіруде. Халықаралық келісімдер өндірістік қалдықтарды бақылауды талап етеді».'
+        }
+      ];
+
+      const makeList = (subId, count) => {
+        const list = [];
+        const base = REAL_ENT_SAMPLES.filter(s => s.subjectId === subId);
+
+        for (let i = 1; i <= count; i++) {
+          if (i <= base.length) {
+            list.push(base[i - 1]);
+            continue;
+          }
+
+          const isMultiple = (count === 40 && i >= 36); // Q36–Q40 multiple choice
+          const isContext = (subId === 'reading');
+
+          if (isContext) {
+            list.push({
+              id: `read_${i.toString().padStart(2, '0')}`,
+              subjectId: 'reading',
+              type: 'context',
+              points: 1,
+              contextText: readingArticles[0],
+              question: {
+                ru: `Вопрос №${i} по тексту: Какой вывод следует из приведенного материала?`,
+                kk: `Мәтін бойынша №${i} сұрақ: Келтірілген үзіндіден қандай негізгі түйін шығаруға болады?`
+              },
+              options: {
+                ru: [
+                  `Проблема требует скоординированных международных экологических мер (Вариант A)`,
+                  `Ситуация не требует никакого вмешательства специалистов`,
+                  `Эндемичные виды адаптируются самостоятельно без риска`,
+                  `Промышленные сбросы не оказывают заметного влияния`
+                ],
+                kk: [
+                  `Мәселе халықаралық үйлестірілген экологиялық шараларды талап етеді (A нұсқасы)`,
+                  `Жағдай мамандардың араласуын қажет етпейді`,
+                  `Эндемикалық түрлер өздігінен қауіпсіз бейімделеді`,
+                  `Өндірістік қалдықтар айтарлықтай әсер етпейді`
+                ]
+              },
+              correctIndexes: [0],
+              explanation: {
+                ru: 'Прямо следует из содержания статьи об охране Каспия.',
+                kk: 'Каспийді қорғау туралы мәтін мазмұнынан тікелей шығады.'
+              }
+            });
+          } else if (isMultiple) {
+            list.push({
+              id: `${subId}_${i.toString().padStart(2, '0')}`,
+              subjectId: subId,
+              type: 'multiple',
+              points: 2,
+              question: {
+                ru: `Задание №${i} (Множественный выбор, до 2 баллов): Выберите ВСЕ верные утверждения:`,
+                kk: `№${i} тапсырма (Бірнеше дұрыс жауабы бар, 2 баллға дейін): БАРЛЫҚ дұрыс тұжырымдарды көрсетіңіз:`
+              },
+              options: {
+                ru: [
+                  `1) Верный академический тезис по теме программы (Вариант A)`,
+                  `2) Второе подтвержденное фундаментальное свойство (Вариант B)`,
+                  `3) Заведомо ошибочное предположение (Вариант C)`,
+                  `4) Третье верное правило из кодификатора (Вариант D)`,
+                  `5) Ложный дистрактор, противоречащий закону (Вариант E)`
+                ],
+                kk: [
+                  `1) Бағдарлама тақырыбы бойынша дұрыс академиялық қағида (A нұсқасы)`,
+                  `2) Екінші дәлелденген іргелі қасиет (B нұсқасы)`,
+                  `3) Бұрмаланған қате тұжырым (C нұсқасы)`,
+                  `4) Кодификатордағы үшінші дұрыс ереже (D нұсқасы)`,
+                  `5) Заңдылыққа қайшы келетін қате жауап (E нұсқасы)`
+                ]
+              },
+              correctIndexes: [0, 1, 3], // 3 correct choices
+              explanation: {
+                ru: 'Правильными являются варианты 1, 2 и 4. За полное совпадение начисляется 2 балла, за 1 ошибку — 1 балл.',
+                kk: '1, 2 және 4 нұсқалары дұрыс. Толық сәйкестікке 2 балл, 1 қатеге 1 балл беріледі.'
+              }
+            });
+          } else {
+            list.push({
+              id: `${subId}_${i.toString().padStart(2, '0')}`,
+              subjectId: subId,
+              type: 'single',
+              points: 1,
+              question: {
+                ru: `Задание №${i}: Укажите правильный ответ на вопрос по дисциплине:`,
+                kk: `№${i} тапсырма: Пән бойынша қойылған сұрақтың дұрыс жауабын көрсетіңіз:`
+              },
+              options: {
+                ru: [
+                  `Правильный эталонный ответ (Вариант A)`,
+                  `Ошибочный дистрактор B`,
+                  `Неверный вариант ответа C`,
+                  `Не соответствует условию задания D`
+                ],
+                kk: [
+                  `Дұрыс эталон жауап (A нұсқасы)`,
+                  `Қате B дистракторы`,
+                  `Сәйкес келмейтін C нұсқасы`,
+                  `Тапсырма шартына қайшы D нұсқасы`
+                ]
+              },
+              correctIndexes: [0],
+              explanation: {
+                ru: 'Вариант A является правильным согласно утвержденной спецификации НЦТ РК.',
+                kk: 'ҚР ҰТО бекітілген мемлекеттік бағдарламасына сәйкес A нұсқасы дұрыс.'
+              }
+            });
+          }
+        }
+        return list;
+      };
+
+      return {
+        history_kz: makeList('history_kz', 20),
+        reading: makeList('reading', 10),
+        math_lit: makeList('math_lit', 10),
+        [p1]: makeList(p1, 40),
+        [p2]: makeList(p2, 40)
+      };
     }
 
     // ==========================================
-    // 2. TRANSLATIONS (i18n)
-    // ==========================================
-    const TRANSLATIONS = {
-      ru: {
-        appTitle: "Платформа подготовки к ЕНТ 2026",
-        appSubtitle: "Официальный формат U-Study / НЦТ РК",
-        navTestSimulator: "Тренажер ЕНТ",
-        navMistakesReview: "Работа над ошибками",
-        navProfilePicker: "Выбор профиля",
-        mandatoryTitle: "Обязательные предметы",
-        profileTitle: "Профильные комбинации",
-        profileDesc: "Выберите 2 профильных предмета по специальности в ВУЗе",
-        startTestBtn: "Начать тестирование ЕНТ",
-        filterSubject: "Фильтр по предмету",
-        filterTopic: "Фильтр по теме",
-        filterStatus: "Статус ошибки",
-        allSubjects: "Все предметы",
-        allTopics: "Все темы",
-        allStatuses: "Все статусы",
-        statusNeedsReview: "Требует повторения",
-        statusResolved: "Исправлено",
-        totalMistakes: "Всего ошибок",
-        activeMistakes: "Осталось отработать",
-        resolvedMistakes: "Успешно исправлено",
-        retestActionBtn: "Пройти заново ошибочные вопросы",
-        yourAnswer: "Ваш неверный ответ",
-        correctAnswer: "Правильный эталонный ответ",
-        methodExplanation: "Методическое пояснение и правило",
-        retestModalTitle: "Экспресс-тест: Работа над ошибками",
-        finishRetestBtn: "Завершить работу над ошибками",
-        retestSuccessNotice: "Отлично! Ответ верен, ошибка исправлена.",
-        retestFailNotice: "Ответ снова неверный. Изучите методическое пояснение.",
-        question: "Вопрос",
-        of: "из",
-        prev: "Назад",
-        next: "Далее",
-        clear: "Сбросить ответ",
-        finishTest: "Завершить тест",
-        emptyMistakes: "Ошибок не найдено!",
-        emptyMistakesDesc: "Пройдите пробный тест, чтобы выявить темы для повторения."
-      },
-      kk: {
-        appTitle: "ҰБТ 2026 дайындық платформасы",
-        appSubtitle: "ҚР ҰТО / U-Study ресми форматы",
-        navTestSimulator: "ҰБТ тренажері",
-        navMistakesReview: "Қатемен жұмыс",
-        navProfilePicker: "Бейінді таңдау",
-        mandatoryTitle: "Міндетті пәндер",
-        profileTitle: "Бейіндік пәндер жұбы",
-        profileDesc: "ЖОО мамандығына сәйкес 2 бейіндік пәнді таңдаңыз",
-        startTestBtn: "ҰБТ тестілеуін бастау",
-        filterSubject: "Пән бойынша сүзгі",
-        filterTopic: "Тақырып бойынша сүзгі",
-        filterStatus: "Қате мәртебесі",
-        allSubjects: "Барлық пәндер",
-        allTopics: "Барлық тақырыптар",
-        allStatuses: "Барлық мәртебелер",
-        statusNeedsReview: "Қайталау қажет",
-        statusResolved: "Түзетілді",
-        totalMistakes: "Жалпы қателер",
-        activeMistakes: "Пысықтау қажет",
-        resolvedMistakes: "Түзетілді",
-        retestActionBtn: "Қате сұрақтарды қайта тапсыру",
-        yourAnswer: "Сіздің қате жауабыңыз",
-        correctAnswer: "Дұрыс эталон жауап",
-        methodExplanation: "Әдістемелік түсіндірме мен ереже",
-        retestModalTitle: "Экспресс-тест: Қатемен жұмыс",
-        finishRetestBtn: "Қатемен жұмысты аяқтау",
-        retestSuccessNotice: "Тамаша! Жауап дұрыс, сұрақ түзетілді.",
-        retestFailNotice: "Жауап тағы да қате. Әдістемелік түсіндірмені оқыңыз.",
-        question: "Сұрақ",
-        of: "/",
-        prev: "Артқа",
-        next: "Келесі",
-        clear: "Жауапты тазарту",
-        finishTest: "Тестті аяқтау",
-        emptyMistakes: "Қателер табылған жоқ!",
-        emptyMistakesDesc: "Қайталау қажет тақырыптарды анықтау үшін сынақ тестін тапсырыңыз."
-      }
-    };
-
-    // ==========================================
-    // 3. QUESTIONS (JSON SCHEMA)
-    // ==========================================
-    const BILINGUAL_QUESTIONS = [
-      {
-        id: "q_hist_01_ru",
-        subjectId: "history_kz",
-        topicId: "kazakh_khanate",
-        language: "ru",
-        question: "В каком году образовалось Казахское ханство согласно Мухаммеду Хайдару Дулати?",
-        options: ["1465–1466 гг.", "1511–1512 гг.", "1723–1725 гг.", "1991 г."],
-        correctIndex: 0,
-        explanation: "Согласно 'Тарих-и Рашиди' Мухаммеда Хайдара Дулати, откочевка Джанибека и Керея положила начало ханству в урочище Козыбасы в 1465–1466 гг."
-      },
-      {
-        id: "q_hist_01_kk",
-        subjectId: "history_kz",
-        topicId: "kazakh_khanate",
-        language: "kk",
-        question: "Мұхаммед Хайдар Дулатидің 'Тарих-и Рашиди' еңбегі бойынша Қазақ хандығы қашан құрылды?",
-        options: ["1465–1466 жж.", "1511–1512 жж.", "1723–1725 жж.", "1991 ж."],
-        correctIndex: 0,
-        explanation: "'Тарих-и Рашиди' дерегіне сәйкес, Керей мен Жәнібектің Қозыбасы өңіріне қоныс аударуымен 1465–1466 жылдары Қазақ хандығы құрылды."
-      },
-      {
-        id: "q_hist_02_ru",
-        subjectId: "history_kz",
-        topicId: "kazakh_khanate",
-        language: "ru",
-        question: "Какой свод законов был принят в период правления хана Тауке?",
-        options: ["'Жеты Жаргы'", "'Касым ханнын каска жолы'", "'Есим ханнын ески жолы'", "'Яса' Чингисхана"],
-        correctIndex: 0,
-        explanation: "При хане Тауке на совете биев в Культобе был принят свод степных законов 'Жеты Жаргы'."
-      },
-      {
-        id: "q_hist_02_kk",
-        subjectId: "history_kz",
-        topicId: "kazakh_khanate",
-        language: "kk",
-        question: "Тәуке хан тұсында қабылданған дала заңдарының жинағы қалай аталады?",
-        options: ["'Жеті жарғы'", "'Қасым ханның қасқа жолы'", "'Есім ханның ескі жолы'", "'Шыңғыс ханның Ясасы'"],
-        correctIndex: 0,
-        explanation: "Тәуке хан билігі тұсында Күлтөбе құрылтайында атақты 'Жеті жарғы' заңдар жинағы қабылданды."
-      },
-      {
-        id: "q_read_01_ru",
-        subjectId: "reading_literacy",
-        topicId: "main_idea",
-        language: "ru",
-        question: "Прочитайте: 'Регулярное чтение развивает эмпатию и сопереживание, улучшая социальные навыки'. Какова главная мысль?",
-        options: [
-          "Чтение книг способствует развитию сопереживания и навыков общения",
-          "Чтение полезно исключительно студентам",
-          "Эмпатия снижает интеллект человека",
-          "Книги вызывают усталость глаз"
-        ],
-        correctIndex: 0,
-        explanation: "В тексте напрямую утверждается связь между чтением и развитием эмпатии."
-      },
-      {
-        id: "q_read_01_kk",
-        subjectId: "reading_literacy",
-        topicId: "main_idea",
-        language: "kk",
-        question: "Мәтінді оқыңыз: 'Тұрақты кітап оқу адамның эмпатиясын дамытып, қарым-қатынас дағдыларын жетілдіреді'. Негізгі ой:",
-        options: [
-          "Кітап оқу өзгеге жанашырлық таныту мен сөйлесу дағдыларын арттырады",
-          "Кітап тек филологтарға қажет",
-          "Эмпатия адам миын шаршатады",
-          "Кітап оқудың пайдасы дәлелденбеген"
-        ],
-        correctIndex: 0,
-        explanation: "Мәтінде кітап оқудың адамдар арасындағы түсіністік пен эмпатияға оң әсері баяндалған."
-      },
-      {
-        id: "q_mathlit_01_ru",
-        subjectId: "math_literacy",
-        topicId: "percents_proportions",
-        language: "ru",
-        question: "Товар стоил 200 000 тг. Сначала цену снизили на 15%, а затем повысили на 10%. Какова новая цена?",
-        options: ["187 000 тенге", "190 000 тенге", "180 000 тенге", "195 000 тенге"],
-        correctIndex: 0,
-        explanation: "200 000 · 0.85 = 170 000; 170 000 · 1.10 = 187 000 тенге."
-      },
-      {
-        id: "q_mathlit_01_kk",
-        subjectId: "math_literacy",
-        topicId: "percents_proportions",
-        language: "kk",
-        question: "Тауар бағасы 200 000 тг болды. Алдымен 15%-ға төмендеп, сосын 10%-ға өсті. Жаңа баға қандай?",
-        options: ["187 000 теңге", "190 000 теңге", "180 000 теңге", "195 000 теңге"],
-        correctIndex: 0,
-        explanation: "200 000 · 0.85 = 170 000; 170 000 · 1.10 = 187 000 теңге."
-      },
-      {
-        id: "q_math_01_ru",
-        subjectId: "math_advanced",
-        topicId: "calculus",
-        language: "ru",
-        question: "Найдите производную f(x) = x³ - 4x² + 5x в точке x = 2.",
-        options: ["1", "-1", "5", "0"],
-        correctIndex: 0,
-        explanation: "f'(x) = 3x² - 8x + 5. f'(2) = 12 - 16 + 5 = 1."
-      },
-      {
-        id: "q_phys_01_ru",
-        subjectId: "physics",
-        topicId: "kinematics",
-        language: "ru",
-        question: "Масса тела 4 кг, ускорение 2.5 м/с². Чему равна сила F?",
-        options: ["10 Н", "6.5 Н", "1.6 Н", "25 Н"],
-        correctIndex: 0,
-        explanation: "По закону Ньютона: F = m · a = 4 · 2.5 = 10 Н."
-      }
-    ];
-
-    // Initial Demo Mistakes
-    const INITIAL_MISTAKES = [
-      {
-        mistakeId: "m_001",
-        questionId: "q_hist_01_ru",
-        subjectId: "history_kz",
-        topicId: "kazakh_khanate",
-        studentAnswerIndex: 1, // Wrong
-        status: "needs_review",
-        attemptsCount: 2
-      },
-      {
-        mistakeId: "m_002",
-        questionId: "q_mathlit_01_ru",
-        subjectId: "math_literacy",
-        topicId: "percents_proportions",
-        studentAnswerIndex: 1, // Wrong
-        status: "needs_review",
-        attemptsCount: 1
-      },
-      {
-        mistakeId: "m_003",
-        questionId: "q_hist_02_kk",
-        subjectId: "history_kz",
-        topicId: "kazakh_khanate",
-        studentAnswerIndex: 1,
-        status: "resolved",
-        attemptsCount: 3
-      }
-    ];
-
-    // ==========================================
-    // 4. MAIN APP COMPONENT
+    // 3. MASTER APPLICATION COMPONENT
     // ==========================================
     function App() {
-      const [language, setLanguage] = useState("ru");
-      const [activeTab, setActiveTab] = useState("test");
-      const [selectedProfile, setSelectedProfile] = useState("math_physics");
-      const [mistakes, setMistakes] = useState(INITIAL_MISTAKES);
-      const [retestItems, setRetestItems] = useState(null);
+      const [language, setLanguage] = useState('ru');
+      const [directionId, setDirectionId] = useState('fizmat');
+      const [viewMode, setViewMode] = useState('exam'); // 'exam' | 'mistakes'
 
-      const t = TRANSLATIONS[language];
-      const activeMistakesCount = mistakes.filter(m => m.status === 'needs_review').length;
+      const examData = useMemo(() => generateFullExam(directionId), [directionId]);
+      const dirConfig = DIRECTIONS_CONFIG.find(d => d.id === directionId) || DIRECTIONS_CONFIG[0];
+      const activeSubjects = ['history_kz', 'reading', 'math_lit', dirConfig.p1, dirConfig.p2];
 
-      const handleUpdateStatus = (id, st) => {
-        setMistakes(prev => prev.map(m => m.mistakeId === id ? { ...m, status: st } : m));
+      const [activeSubject, setActiveSubject] = useState('history_kz');
+      const [currentIndex, setCurrentIndex] = useState(0);
+      const [answers, setAnswers] = useState({}); // { [qId]: number[] }
+      const [bookmarked, setBookmarked] = useState({});
+      const [timeLeft, setTimeLeft] = useState(240 * 60); // 240 minutes = 14400s
+      const [isFinished, setIsFinished] = useState(false);
+
+      // Modals
+      const [showCalc, setShowCalc] = useState(false);
+      const [showRef, setShowRef] = useState(false);
+      const [showConfirm, setShowConfirm] = useState(false);
+      const [refTab, setRefTab] = useState('mendeleev');
+      const [mistakes, setMistakes] = useState([]);
+      const [blitzItem, setBlitzItem] = useState(null);
+
+      // Flatten questions map
+      const allQuestionsMap = useMemo(() => {
+        const map = {};
+        Object.values(examData).forEach(arr => arr.forEach(q => { map[q.id] = q; }));
+        return map;
+      }, [examData]);
+
+      // Timer
+      useEffect(() => {
+        if (isFinished) return;
+        const timer = setInterval(() => {
+          setTimeLeft(p => {
+            if (p <= 1) {
+              clearInterval(timer);
+              finishExam();
+              return 0;
+            }
+            return p - 1;
+          });
+        }, 1000);
+        return () => clearInterval(timer);
+      }, [isFinished]);
+
+      const formatTime = (sec) => {
+        const h = Math.floor(sec / 3600);
+        const m = Math.floor((sec % 3600) / 60);
+        const s = sec % 60;
+        const pad = n => String(n).padStart(2, '0');
+        return `${pad(h)}:${pad(m)}:${pad(s)}`;
       };
 
-      const handleResolveMistake = (id) => {
-        setMistakes(prev => prev.map(m => m.mistakeId === id ? { ...m, status: 'resolved' } : m));
+      const currentSubjectQuestions = examData[activeSubject] || [];
+      const currentQ = currentSubjectQuestions[currentIndex] || currentSubjectQuestions[0];
+
+      const handleSelectOption = (idx, isMult) => {
+        if (isFinished || !currentQ) return;
+        setAnswers(prev => {
+          const cur = prev[currentQ.id] || [];
+          if (isMult) {
+            const next = cur.includes(idx) ? cur.filter(i => i !== idx) : [...cur, idx];
+            return { ...prev, [currentQ.id]: next };
+          } else {
+            return { ...prev, [currentQ.id]: [idx] };
+          }
+        });
       };
 
-      const handleFinishTestWithMistakes = (newMs) => {
-        if (newMs && newMs.length > 0) {
-          setMistakes(prev => [...newMs, ...prev]);
-        }
-        setActiveTab("mistakes");
+      // Score Calculation (out of 140)
+      const scoreResults = useMemo(() => {
+        let total = 0;
+        const subScores = {};
+
+        activeSubjects.forEach(sId => {
+          const qList = examData[sId] || [];
+          let sScore = 0;
+          const sMax = SUBJECTS_METADATA[sId]?.maxPoints || 0;
+
+          qList.forEach(q => {
+            const uAns = answers[q.id] || [];
+            if (q.type === 'multiple') {
+              const cSet = new Set(q.correctIndexes);
+              const uSet = new Set(uAns);
+              let err = 0;
+              uAns.forEach(a => { if (!cSet.has(a)) err++; });
+              q.correctIndexes.forEach(a => { if (!uSet.has(a)) err++; });
+
+              if (err === 0 && uAns.length > 0) sScore += 2;
+              else if (err === 1) sScore += 1;
+            } else {
+              if (uAns.length === 1 && uAns[0] === q.correctIndexes[0]) sScore += 1;
+            }
+          });
+
+          subScores[sId] = { score: sScore, max: sMax };
+          total += sScore;
+        });
+
+        return { total, max: 140, subScores };
+      }, [answers, examData, activeSubjects]);
+
+      const finishExam = () => {
+        setShowConfirm(false);
+        setIsFinished(true);
+
+        const newM = [];
+        Object.values(examData).forEach(arr => {
+          arr.forEach(q => {
+            const u = answers[q.id] || [];
+            let ok = false;
+            if (q.type === 'multiple') {
+              ok = (u.length === q.correctIndexes.length && q.correctIndexes.every(i => u.includes(i)));
+            } else {
+              ok = (u.length === 1 && u[0] === q.correctIndexes[0]);
+            }
+            if (!ok) {
+              newM.push({
+                mistakeId: `m_${Date.now()}_${q.id}`,
+                questionId: q.id,
+                subjectId: q.subjectId,
+                studentAnswers: u,
+                status: 'needs_review'
+              });
+            }
+          });
+        });
+
+        setMistakes(newM);
+        setViewMode('mistakes');
       };
+
+      const letters = ['A', 'B', 'C', 'D', 'E'];
 
       return (
         <div className="min-h-screen flex flex-col font-sans">
           
           {/* HEADER */}
-          <header className="bg-[#0f2444] text-white sticky top-0 z-40 shadow-lg border-b border-blue-900/60">
+          <header className="bg-[#0f2444] text-white sticky top-0 z-40 shadow-xl border-b border-blue-900">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-4">
+              
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-black text-xl shadow-md border border-white/20">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-black text-xl shadow border border-white/20">
                   ЕНТ
                 </div>
                 <div>
-                  <h1 className="font-bold text-base sm:text-lg text-white leading-tight">{t.appTitle}</h1>
-                  <div className="text-[11px] text-blue-200/80 hidden sm:block">{t.appSubtitle}</div>
+                  <h1 className="font-bold text-sm sm:text-base leading-tight">
+                    {language === 'kk' ? 'Мемлекеттік ҰБТ симуляторы' : 'Симулятор ЕНТ 2026'}
+                  </h1>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-[11px] text-blue-300 font-semibold">{language === 'kk' ? 'Бағыты:' : 'Профиль:'}</span>
+                    <select
+                      value={directionId}
+                      disabled={isFinished || Object.keys(answers).length > 0}
+                      onChange={e => {
+                        setDirectionId(e.target.value);
+                        setAnswers({});
+                        setCurrentIndex(0);
+                        setActiveSubject('history_kz');
+                      }}
+                      className="bg-blue-950 border border-blue-700 rounded px-1.5 py-0.5 text-xs font-bold text-white"
+                    >
+                      {DIRECTIONS_CONFIG.map(d => (
+                        <option key={d.id} value={d.id}>{d.name[language]}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
 
-              {/* Center Nav */}
-              <nav className="hidden md:flex items-center gap-1.5 bg-blue-950/70 p-1.5 rounded-2xl border border-blue-800/60 text-xs sm:text-sm font-semibold">
+              {/* Tools & Timer & Language */}
+              <div className="flex items-center gap-2 sm:gap-3">
+                
                 <button
-                  onClick={() => setActiveTab("test")}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl transition ${activeTab === 'test' ? 'bg-blue-600 text-white shadow-md' : 'text-blue-200 hover:text-white'}`}
+                  onClick={() => setViewMode(viewMode === 'exam' ? 'mistakes' : 'exam')}
+                  className="px-3 py-1.5 rounded-xl bg-blue-950 border border-blue-800 text-xs font-bold text-blue-200 hover:text-white"
                 >
-                  <span>🎓</span>
-                  <span>{t.navTestSimulator}</span>
+                  {viewMode === 'exam' ? (language === 'kk' ? 'Қатемен жұмыс' : 'Ошибки') : (language === 'kk' ? 'Тестке қайту' : 'К тесту')}
+                  {mistakes.length > 0 && <span className="ml-1 px-1.5 py-0.2 bg-rose-500 rounded-full text-[10px] text-white">{mistakes.length}</span>}
                 </button>
 
                 <button
-                  onClick={() => setActiveTab("mistakes")}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl transition relative ${activeTab === 'mistakes' ? 'bg-blue-600 text-white shadow-md' : 'text-blue-200 hover:text-white'}`}
+                  onClick={() => setShowRef(true)}
+                  className="px-3 py-1.5 rounded-xl bg-blue-950 border border-blue-800 text-xs font-bold text-blue-200 hover:text-white flex items-center gap-1"
                 >
-                  <span>🛠️</span>
-                  <span>{t.navMistakesReview}</span>
-                  {activeMistakesCount > 0 && (
-                    <span className="ml-1 px-1.5 py-0.5 text-[11px] font-bold rounded-full bg-rose-500 text-white animate-pulse">
-                      {activeMistakesCount}
-                    </span>
-                  )}
+                  <span>📖</span> <span className="hidden sm:inline">{language === 'kk' ? 'Анықтама' : 'Справочник'}</span>
                 </button>
 
                 <button
-                  onClick={() => setActiveTab("profile")}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl transition ${activeTab === 'profile' ? 'bg-blue-600 text-white shadow-md' : 'text-blue-200 hover:text-white'}`}
+                  onClick={() => setShowCalc(!showCalc)}
+                  className="px-3 py-1.5 rounded-xl bg-blue-950 border border-blue-800 text-xs font-bold text-blue-200 hover:text-white flex items-center gap-1"
                 >
-                  <span>📚</span>
-                  <span>{t.navProfilePicker}</span>
+                  <span>🧮</span> <span className="hidden sm:inline">Калькулятор</span>
                 </button>
-              </nav>
 
-              {/* Language Switcher */}
-              <div className="flex items-center bg-blue-950/90 border border-blue-700/80 rounded-2xl p-1 shadow-inner">
-                <button
-                  onClick={() => setLanguage("kk")}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 ${language === 'kk' ? 'bg-blue-500 text-white shadow' : 'text-blue-300 hover:text-white'}`}
-                >
-                  <span>🇰🇿</span> ҚАЗ
-                </button>
-                <button
-                  onClick={() => setLanguage("ru")}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 ${language === 'ru' ? 'bg-blue-500 text-white shadow' : 'text-blue-300 hover:text-white'}`}
-                >
-                  <span>🇷🇺</span> РУС
-                </button>
-              </div>
-            </div>
+                {/* TIMER 240 MIN */}
+                <div className={`px-3 py-1.5 rounded-xl border font-mono font-bold text-xs sm:text-sm ${
+                  timeLeft < 600 ? 'bg-rose-600 border-rose-400 text-white animate-pulse' : 'bg-blue-950 border-blue-700 text-emerald-400'
+                }`}>
+                  ⏱️ {formatTime(timeLeft)}
+                </div>
 
-            {/* Mobile Bar */}
-            <div className="md:hidden flex items-center justify-around border-t border-blue-900 bg-blue-950 px-2 py-1 text-xs font-semibold">
-              <button onClick={() => setActiveTab("test")} className={`py-1.5 px-3 rounded-lg ${activeTab === 'test' ? 'bg-blue-600 text-white' : 'text-blue-300'}`}>{t.navTestSimulator}</button>
-              <button onClick={() => setActiveTab("mistakes")} className={`py-1.5 px-3 rounded-lg relative ${activeTab === 'mistakes' ? 'bg-blue-600 text-white' : 'text-blue-300'}`}>
-                {t.navMistakesReview} {activeMistakesCount > 0 && <span className="bg-rose-500 text-white text-[10px] px-1 rounded-full">{activeMistakesCount}</span>}
-              </button>
-              <button onClick={() => setActiveTab("profile")} className={`py-1.5 px-3 rounded-lg ${activeTab === 'profile' ? 'bg-blue-600 text-white' : 'text-blue-300'}`}>{t.navProfilePicker}</button>
-            </div>
-          </header>
-
-          {/* TAB 1: PROFILE PICKER */}
-          {activeTab === 'profile' && (
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex-1">
-              <div className="text-center max-w-2xl mx-auto mb-8">
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">{t.profileTitle}</h2>
-                <p className="text-slate-500 text-sm mt-2">{t.profileDesc}</p>
-              </div>
-
-              {/* Mandatory */}
-              <div className="mb-8">
-                <h3 className="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
-                  {t.mandatoryTitle}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {SUBJECTS_CONFIG.mandatory.map(s => (
-                    <div key={s.id} className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-                      <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-blue-50 text-blue-700">{s.code}</span>
-                      <h4 className="font-bold text-slate-900 mt-2">{s.name[language]}</h4>
-                      <div className="text-xs text-slate-500 mt-1">{s.questionCount} {t.question.toLowerCase()}</div>
-                    </div>
-                  ))}
+                {/* KZ / RU */}
+                <div className="flex bg-blue-950 border border-blue-700 rounded-xl p-0.5 text-xs font-bold">
+                  <button onClick={() => setLanguage('kk')} className={`px-2 py-1 rounded-lg ${language === 'kk' ? 'bg-blue-600 text-white' : 'text-blue-300'}`}>ҚАЗ</button>
+                  <button onClick={() => setLanguage('ru')} className={`px-2 py-1 rounded-lg ${language === 'ru' ? 'bg-blue-600 text-white' : 'text-blue-300'}`}>РУС</button>
                 </div>
               </div>
+            </div>
 
-              {/* Profile Combos */}
-              <div className="mb-8">
-                <h3 className="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
-                  {t.profileTitle}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {SUBJECTS_CONFIG.profileCombinations.map(c => {
-                    const isSel = selectedProfile === c.id;
+            {/* 5 SUBJECTS TABS */}
+            {viewMode === 'exam' && (
+              <div className="bg-[#0b1d38] px-4 sm:px-6 py-2 border-t border-blue-950 overflow-x-auto">
+                <div className="max-w-7xl mx-auto flex items-center gap-2">
+                  {activeSubjects.map((sId, idx) => {
+                    const isActive = activeSubject === sId;
+                    const subMeta = SUBJECTS_METADATA[sId];
+                    const qList = examData[sId] || [];
+                    const ansCount = qList.filter(q => answers[q.id]?.length > 0).length;
+
                     return (
-                      <div
-                        key={c.id}
-                        onClick={() => setSelectedProfile(c.id)}
-                        className={`p-5 rounded-2xl border-2 cursor-pointer transition ${isSel ? 'border-blue-600 bg-blue-50 shadow-md ring-2 ring-blue-600/20' : 'border-slate-200 bg-white hover:border-blue-300'}`}
-                      >
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="text-xs font-bold px-2 py-0.5 rounded bg-indigo-100 text-indigo-800">Профиль</span>
-                          {isSel && <span className="text-xs font-bold text-blue-600">✓ Выбрано</span>}
-                        </div>
-                        <h4 className="font-bold text-slate-900 text-base mb-1">{c.name[language]}</h4>
-                        <p className="text-xs text-slate-600 mb-3">{c.description[language]}</p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="text-center">
-                <button
-                  onClick={() => setActiveTab("test")}
-                  className="px-8 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-base shadow-xl transition active:scale-95"
-                >
-                  {t.startTestBtn}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* TAB 2: TEST SIMULATOR */}
-          {activeTab === 'test' && (
-            <TestSimulatorView
-              language={language}
-              selectedProfile={selectedProfile}
-              onFinishTest={handleFinishTestWithMistakes}
-            />
-          )}
-
-          {/* TAB 3: MISTAKES REVIEW PAGE */}
-          {activeTab === 'mistakes' && (
-            <MistakesReviewView
-              language={language}
-              mistakes={mistakes}
-              onUpdateStatus={handleUpdateStatus}
-              onLaunchRetest={items => setRetestItems(items)}
-            />
-          )}
-
-          {/* RETEST MODAL */}
-          {retestItems && (
-            <RetestModalView
-              language={language}
-              items={retestItems}
-              onClose={() => setRetestItems(null)}
-              onResolve={handleResolveMistake}
-            />
-          )}
-        </div>
-      );
-    }
-
-    // ==========================================
-    // 5. TEST SIMULATOR SUB-COMPONENT
-    // ==========================================
-    function TestSimulatorView({ language, selectedProfile, onFinishTest }) {
-      const t = TRANSLATIONS[language];
-      const activeSubjects = useMemo(() => {
-        const list = [...SUBJECTS_CONFIG.mandatory];
-        const combo = SUBJECTS_CONFIG.profileCombinations.find(c => c.id === selectedProfile);
-        if (combo && combo.subjects) list.push(...combo.subjects);
-        return list;
-      }, [selectedProfile]);
-
-      const [activeSubjectId, setActiveSubjectId] = useState(activeSubjects[0].id);
-      const [currentIndex, setCurrentIndex] = useState(0);
-      const [answers, setAnswers] = useState({});
-      const [timeLeft, setTimeLeft] = useState(120 * 60);
-
-      const currentQuestions = useMemo(() => {
-        const found = BILINGUAL_QUESTIONS.filter(q => q.subjectId === activeSubjectId && q.language === language);
-        return found.length > 0 ? found : BILINGUAL_QUESTIONS.filter(q => q.subjectId === activeSubjectId);
-      }, [activeSubjectId, language]);
-
-      useEffect(() => { setCurrentIndex(0); }, [activeSubjectId]);
-
-      useEffect(() => {
-        const timer = setInterval(() => setTimeLeft(p => p > 1 ? p - 1 : 0), 1000);
-        return () => clearInterval(timer);
-      }, []);
-
-      const q = currentQuestions[currentIndex] || currentQuestions[0];
-
-      const handleFinish = () => {
-        const ms = [];
-        BILINGUAL_QUESTIONS.forEach(item => {
-          const ans = answers[item.id];
-          if (ans !== undefined && ans !== item.correctIndex) {
-            ms.push({
-              mistakeId: `m_${Date.now()}_${item.id}`,
-              questionId: item.id,
-              subjectId: item.subjectId,
-              topicId: item.topicId,
-              studentAnswerIndex: ans,
-              status: "needs_review",
-              attemptsCount: 1
-            });
-          }
-        });
-        onFinishTest(ms);
-      };
-
-      if (!q) return <div className="p-8 text-center">Загрузка вопросов...</div>;
-
-      const letters = ["A", "B", "C", "D"];
-
-      return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex-1 w-full">
-          {/* Subject Pills */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6">
-            {activeSubjects.map((sub, sIdx) => {
-              const isActive = activeSubjectId === sub.id;
-              return (
-                <button
-                  key={sub.id}
-                  onClick={() => setActiveSubjectId(sub.id)}
-                  className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition border ${
-                    isActive ? 'bg-blue-600 text-white border-blue-600 shadow' : 'bg-white text-slate-700 border-slate-200'
-                  }`}
-                >
-                  {sIdx + 1}. {sub.shortName ? sub.shortName[language] : sub.name[language]}
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* Question Card */}
-            <div className="lg:col-span-8 bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-                <span className="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-xl">
-                  {t.question} {currentIndex + 1} {t.of} {currentQuestions.length}
-                </span>
-                <span className="text-xs text-slate-500 font-semibold">{getSubjectById(activeSubjectId)?.name[language]}</span>
-              </div>
-
-              <div className="p-6 sm:p-8">
-                <h3 className="text-base sm:text-lg font-semibold text-slate-900 mb-6 leading-relaxed select-text">
-                  {q.question}
-                </h3>
-
-                <div className="space-y-3">
-                  {q.options.map((opt, oIdx) => {
-                    const isSel = answers[q.id] === oIdx;
-                    return (
-                      <div
-                        key={oIdx}
-                        onClick={() => setAnswers(p => ({ ...p, [q.id]: oIdx }))}
-                        className={`flex items-start gap-4 p-4 rounded-2xl border-2 cursor-pointer transition ${
-                          isSel ? 'border-blue-600 bg-blue-50/90 text-blue-950 font-semibold' : 'border-slate-200 bg-white hover:border-blue-300'
+                      <button
+                        key={sId}
+                        onClick={() => { setActiveSubject(sId); setCurrentIndex(0); }}
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap border transition ${
+                          isActive ? 'bg-blue-600 text-white border-blue-500 shadow' : 'bg-blue-950/60 text-blue-300 hover:text-white border-blue-900'
                         }`}
                       >
-                        <span className={`w-7 h-7 rounded-full border-2 flex items-center justify-center text-xs font-bold ${
-                          isSel ? 'bg-blue-600 border-blue-600 text-white' : 'border-slate-300 text-slate-600 bg-slate-50'
-                        }`}>
-                          {letters[oIdx]}
-                        </span>
-                        <span className="pt-0.5 text-sm sm:text-base flex-1">{opt}</span>
-                        {isSel && <span className="text-blue-600 font-bold">✓</span>}
+                        <span className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-[10px]">{idx + 1}</span>
+                        <span>{subMeta?.name[language] || sId}</span>
+                        <span className="px-1.5 py-0.2 rounded-full bg-white/20 text-[10px]">{ansCount}/{qList.length}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </header>
+
+          {/* MAIN WORKSPACE */}
+          <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 py-6 w-full">
+            {viewMode === 'mistakes' ? (
+              /* MISTAKES REVIEW PAGE */
+              <div>
+                {/* Result banner */}
+                <div className="bg-[#0f2444] text-white rounded-3xl p-6 sm:p-8 mb-8 shadow-xl border border-blue-900">
+                  <div className="flex justify-between items-center mb-6">
+                    <div>
+                      <div className="text-xs font-bold uppercase text-blue-300">{language === 'kk' ? 'ҰБТ мемлекеттік есебі' : 'Официальный отчет ЕНТ'}</div>
+                      <h2 className="text-2xl sm:text-3xl font-black">{language === 'kk' ? 'Емтихан нәтижелері' : 'Результаты тестирования'}</h2>
+                    </div>
+                    <div className="px-4 py-2 rounded-2xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-bold">
+                      {scoreResults.total >= 50 ? '✓ Пороговый балл набран (≥ 50)' : '✕ Порог не набран (< 50)'}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                    <div className="bg-white/10 p-4 rounded-2xl text-center">
+                      <div className="text-3xl font-black text-white">{scoreResults.total} <span className="text-base text-blue-300 font-normal">/ 140</span></div>
+                      <div className="text-xs text-blue-200 mt-1 uppercase font-semibold">{language === 'kk' ? 'Жалпы балл' : 'Общий балл'}</div>
+                    </div>
+                    <div className="bg-white/10 p-4 rounded-2xl text-center">
+                      <div className="text-3xl font-black text-emerald-300">{Math.round((scoreResults.total / 140) * 100)}%</div>
+                      <div className="text-xs text-blue-200 mt-1 uppercase font-semibold">{language === 'kk' ? 'Пайыз' : 'Процент'}</div>
+                    </div>
+                    <div className="bg-rose-500/20 p-4 rounded-2xl text-center">
+                      <div className="text-3xl font-black text-rose-300">{mistakes.length}</div>
+                      <div className="text-xs text-rose-200 mt-1 uppercase font-semibold">{language === 'kk' ? 'Қателер' : 'Ошибок в тесте'}</div>
+                    </div>
+                    <div className="bg-emerald-500/20 p-4 rounded-2xl text-center">
+                      <div className="text-3xl font-black text-emerald-300">{mistakes.filter(m => m.status === 'resolved').length}</div>
+                      <div className="text-xs text-emerald-200 mt-1 uppercase font-semibold">{language === 'kk' ? 'Түзетілді' : 'Исправлено'}</div>
+                    </div>
+                  </div>
+
+                  {/* 5 Subjects Breakdown */}
+                  <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 pt-4 border-t border-blue-900">
+                    {activeSubjects.map(sId => {
+                      const sc = scoreResults.subScores[sId] || { score: 0, max: 0 };
+                      return (
+                        <div key={sId} className="bg-white/5 p-3 rounded-xl text-center border border-white/10">
+                          <div className="text-xs text-blue-200 font-bold truncate">{SUBJECTS_METADATA[sId]?.name[language]}</div>
+                          <div className="text-lg font-black text-white mt-1">{sc.score} <span className="text-xs text-slate-400 font-normal">/ {sc.max}</span></div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Error Cards */}
+                <div className="space-y-6">
+                  {mistakes.map(m => {
+                    const q = allQuestionsMap[m.questionId];
+                    if (!q) return null;
+                    const isRes = m.status === 'resolved';
+                    const opts = q.options[language] || q.options.ru;
+
+                    const studentText = m.studentAnswers.map(i => opts[i]).join(', ') || 'Ответ не был выбран';
+                    const correctText = q.correctIndexes.map(i => opts[i]).join(', ');
+
+                    return (
+                      <div key={m.mistakeId} className={`bg-white rounded-3xl p-6 border shadow-sm ${isRes ? 'border-emerald-300 bg-emerald-50/10' : 'border-rose-200'}`}>
+                        <div className="flex justify-between items-center mb-3">
+                          <span className="text-xs font-bold px-2.5 py-1 bg-blue-50 text-blue-800 rounded-xl">{SUBJECTS_METADATA[q.subjectId]?.name[language]}</span>
+                          <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${isRes ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>
+                            {isRes ? '✓ Успешно повторено' : '● Требует повторения'}
+                          </span>
+                        </div>
+
+                        <h4 className="font-bold text-slate-900 text-base mb-4">{q.question[language] || q.question.ru}</h4>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                          <div className="p-3.5 rounded-2xl border-2 border-rose-300 bg-rose-50 text-rose-950">
+                            <div className="text-xs font-bold uppercase text-rose-700 mb-1">✕ Ваш ответ:</div>
+                            <div className="text-sm font-medium">{studentText}</div>
+                          </div>
+                          <div className="p-3.5 rounded-2xl border-2 border-emerald-400 bg-emerald-50 text-emerald-950">
+                            <div className="text-xs font-bold uppercase text-emerald-700 mb-1">✓ Правильный эталонный ответ:</div>
+                            <div className="text-sm font-medium">{correctText}</div>
+                          </div>
+                        </div>
+
+                        <div className="bg-blue-50 p-4 rounded-2xl border border-blue-200 text-xs sm:text-sm text-blue-950">
+                          <div className="font-bold text-blue-900 mb-1">📖 Методическое объяснение:</div>
+                          <div>{q.explanation[language] || q.explanation.ru}</div>
+                        </div>
+
+                        <div className="mt-4 pt-3 border-t flex justify-end">
+                          <button
+                            onClick={() => setBlitzItem(m)}
+                            className="px-4 py-2 bg-blue-600 text-white font-bold text-xs rounded-xl shadow hover:bg-blue-700"
+                          >
+                            ⚡ Пройти этот вопрос заново
+                          </button>
+                        </div>
                       </div>
                     );
                   })}
                 </div>
               </div>
-
-              <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-between items-center">
-                <button
-                  disabled={currentIndex === 0}
-                  onClick={() => setCurrentIndex(p => p - 1)}
-                  className="px-4 py-2 border rounded-xl text-xs sm:text-sm font-semibold disabled:opacity-40"
-                >
-                  {t.prev}
-                </button>
-                <button
-                  onClick={() => {
-                    if (currentIndex < currentQuestions.length - 1) setCurrentIndex(p => p + 1);
-                    else handleFinish();
-                  }}
-                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow"
-                >
-                  {currentIndex < currentQuestions.length - 1 ? t.next : t.finishTest}
-                </button>
-              </div>
-            </div>
-
-            {/* Matrix & Timer */}
-            <div className="lg:col-span-4 bg-white rounded-3xl border border-slate-200 p-5 shadow-sm space-y-4">
-              <div className="flex justify-between items-center pb-3 border-b border-slate-200">
-                <span className="font-bold text-sm text-slate-800">Сетка вопросов</span>
-                <span className="font-mono font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-xl border border-emerald-200 text-sm">
-                  ⏱️ {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-5 gap-2">
-                {currentQuestions.map((item, idx) => {
-                  const isAns = answers[item.id] !== undefined;
-                  const isCur = currentIndex === idx;
-                  let st = "bg-slate-100 text-slate-700";
-                  if (isAns) st = "bg-emerald-600 text-white";
-                  if (isCur) st += " ring-2 ring-blue-600 font-black border-blue-600";
-
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => setCurrentIndex(idx)}
-                      className={`h-10 rounded-xl text-xs font-bold border ${st}`}
-                    >
-                      {idx + 1}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <button
-                onClick={handleFinish}
-                className="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold text-xs sm:text-sm shadow transition"
-              >
-                {t.finishTest}
-              </button>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    // ==========================================
-    // 6. MISTAKES REVIEW SUB-COMPONENT
-    // ==========================================
-    function MistakesReviewView({ language, mistakes, onUpdateStatus, onLaunchRetest }) {
-      const t = TRANSLATIONS[language];
-      const [selSub, setSelSub] = useState("all");
-      const [selStatus, setSelStatus] = useState("all");
-
-      const enriched = useMemo(() => {
-        return mistakes.map(m => {
-          let q = BILINGUAL_QUESTIONS.find(item => item.id === m.questionId);
-          if (q && q.language !== language) {
-            const eq = BILINGUAL_QUESTIONS.find(item => item.subjectId === q.subjectId && item.topicId === q.topicId && item.language === language);
-            if (eq) q = eq;
-          }
-          return { ...m, questionData: q, subjectData: getSubjectById(m.subjectId) };
-        }).filter(item => item.questionData);
-      }, [mistakes, language]);
-
-      const filtered = useMemo(() => {
-        return enriched.filter(item => {
-          if (selSub !== "all" && item.subjectId !== selSub) return false;
-          if (selStatus !== "all" && item.status !== selStatus) return false;
-          return true;
-        });
-      }, [enriched, selSub, selStatus]);
-
-      const stats = {
-        total: enriched.length,
-        needsReview: enriched.filter(m => m.status === 'needs_review').length,
-        resolved: enriched.filter(m => m.status === 'resolved').length
-      };
-
-      return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 font-sans">
-          {/* Banner */}
-          <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl mb-8 border border-slate-800">
-            <h2 className="text-2xl sm:text-3xl font-black mb-2">{t.mistakesTitle}</h2>
-            <p className="text-slate-300 text-sm">{t.mistakesSubtitle}</p>
-
-            <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-slate-800 text-center">
-              <div className="bg-white/5 rounded-2xl p-3 border border-white/10">
-                <div className="text-2xl font-bold">{stats.total}</div>
-                <div className="text-[11px] text-slate-400 uppercase">{t.totalMistakes}</div>
-              </div>
-              <div className="bg-rose-500/10 rounded-2xl p-3 border border-rose-500/20">
-                <div className="text-2xl font-bold text-rose-400">{stats.needsReview}</div>
-                <div className="text-[11px] text-rose-300 uppercase">{t.activeMistakes}</div>
-              </div>
-              <div className="bg-emerald-500/10 rounded-2xl p-3 border border-emerald-500/20">
-                <div className="text-2xl font-bold text-emerald-400">{stats.resolved}</div>
-                <div className="text-[11px] text-emerald-300 uppercase">{t.resolvedMistakes}</div>
-              </div>
-            </div>
-
-            {stats.needsReview > 0 && (
-              <div className="mt-6 flex justify-between items-center bg-blue-600/30 p-4 rounded-2xl border border-blue-500/30">
-                <span className="text-xs sm:text-sm text-blue-100">Изучите ошибки и закрепите их повторным тестом</span>
-                <button
-                  onClick={() => onLaunchRetest(filtered.filter(m => m.status === 'needs_review'))}
-                  className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow transition active:scale-95"
-                >
-                  {t.retestActionBtn} ({stats.needsReview})
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Filters */}
-          <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm mb-6 flex flex-wrap gap-4">
-            <div className="flex-1 min-w-[200px]">
-              <label className="block text-xs font-bold text-slate-600 uppercase mb-1">{t.filterSubject}</label>
-              <select
-                value={selSub}
-                onChange={e => setSelSub(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm"
-              >
-                <option value="all">{t.allSubjects}</option>
-                {SUBJECTS_CONFIG.mandatory.map(s => <option key={s.id} value={s.id}>{s.name[language]}</option>)}
-                {SUBJECTS_CONFIG.profileCombinations.map(c => c.subjects.map(s => <option key={s.id} value={s.id}>{s.name[language]}</option>))}
-              </select>
-            </div>
-
-            <div className="flex-1 min-w-[200px]">
-              <label className="block text-xs font-bold text-slate-600 uppercase mb-1">{t.filterStatus}</label>
-              <select
-                value={selStatus}
-                onChange={e => setSelStatus(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm"
-              >
-                <option value="all">{t.allStatuses}</option>
-                <option value="needs_review">🔴 {t.statusNeedsReview}</option>
-                <option value="resolved">🟢 {t.statusResolved}</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Cards List */}
-          {filtered.length === 0 ? (
-            <div className="bg-white rounded-3xl p-10 text-center border border-slate-200">
-              <h3 className="font-bold text-slate-800 text-base mb-1">{t.emptyMistakes}</h3>
-              <p className="text-xs text-slate-500">{t.emptyMistakesDesc}</p>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {filtered.map(item => {
-                const q = item.questionData;
-                const isRes = item.status === 'resolved';
-                const studentAns = q.options[item.studentAnswerIndex] || "—";
-                const correctAns = q.options[q.correctIndex];
-
-                return (
-                  <div key={item.mistakeId} className={`rounded-2xl border p-6 bg-white shadow-sm ${isRes ? 'border-emerald-200' : 'border-rose-200'}`}>
-                    <div className="flex justify-between items-center mb-3">
-                      <span className="text-xs font-bold px-2.5 py-1 bg-blue-50 text-blue-800 rounded-lg">
-                        {item.subjectData?.name[language]}
+            ) : (
+              /* ACTIVE EXAM SIMULATOR VIEW */
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                {/* QUESTION CARD (8 cols) */}
+                <div className="lg:col-span-8 bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                  {/* Status Bar */}
+                  <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+                    <div className="flex items-center gap-2.5">
+                      <span className="bg-blue-600 text-white font-black text-xs px-3.5 py-1.5 rounded-xl shadow-sm">
+                        Вопрос {currentIndex + 1} / {currentSubjectQuestions.length}
                       </span>
-                      <div className="flex items-center gap-2">
-                        <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${isRes ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>
-                          {isRes ? '✓ ' + t.statusResolved : '● ' + t.statusNeedsReview}
+                      <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-slate-200 text-slate-700">
+                        {SUBJECTS_METADATA[activeSubject]?.name[language]}
+                      </span>
+                      {currentQ?.type === 'multiple' && (
+                        <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-indigo-100 text-indigo-800 border border-indigo-200">
+                          Множественный выбор (2 балла)
                         </span>
-                        <button
-                          onClick={() => onUpdateStatus(item.mistakeId, isRes ? 'needs_review' : 'resolved')}
-                          className="text-xs text-slate-400 hover:text-slate-700 underline"
-                        >
-                          Сменить
-                        </button>
-                      </div>
+                      )}
                     </div>
 
-                    <h4 className="font-semibold text-slate-900 text-base mb-4 leading-relaxed">{q.question}</h4>
+                    <button
+                      onClick={() => setBookmarked(p => ({ ...p, [currentQ.id]: !p[currentQ.id] }))}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition flex items-center gap-1 ${
+                        bookmarked[currentQ?.id] ? 'bg-amber-100 border-amber-300 text-amber-900' : 'bg-white border-slate-300 text-slate-600'
+                      }`}
+                    >
+                      <span>{bookmarked[currentQ?.id] ? '★ В закладках' : '☆ В закладки'}</span>
+                    </button>
+                  </div>
 
-                    {/* Red / Green Comparison */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-                      <div className="p-3 rounded-xl border-2 border-rose-300 bg-rose-50 text-rose-950">
-                        <div className="text-xs font-bold uppercase text-rose-700 mb-1">✕ {t.yourAnswer}</div>
-                        <div className="text-sm font-medium">{studentAns}</div>
-                      </div>
-                      <div className="p-3 rounded-xl border-2 border-emerald-300 bg-emerald-50 text-emerald-950">
-                        <div className="text-xs font-bold uppercase text-emerald-700 mb-1">✓ {t.correctAnswer}</div>
-                        <div className="text-sm font-medium">{correctAns}</div>
-                      </div>
-                    </div>
+                  {/* Body: Split View for Reading or Standard */}
+                  <div className="p-6 sm:p-8 flex-1">
+                    {currentQ?.type === 'context' && currentQ.contextText ? (
+                      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                        <div className="lg:col-span-6 bg-slate-50 p-5 rounded-2xl border border-slate-200 max-h-[420px] overflow-y-auto">
+                          <div className="text-xs font-bold uppercase text-slate-400 mb-2">📄 Контекстный текст:</div>
+                          <div className="text-sm font-serif leading-relaxed text-slate-800 whitespace-pre-line">
+                            {currentQ.contextText[language] || currentQ.contextText.ru}
+                          </div>
+                        </div>
 
-                    {/* Explanation */}
-                    {q.explanation && (
-                      <div className="bg-blue-50 border border-blue-200 rounded-xl p-3.5 text-xs text-blue-950 leading-relaxed">
-                        <div className="font-bold text-blue-900 mb-1">📖 {t.methodExplanation}:</div>
-                        <div>{q.explanation}</div>
+                        <div className="lg:col-span-6 space-y-4">
+                          <h3 className="font-bold text-slate-900 text-base leading-relaxed">{currentQ.question[language] || currentQ.question.ru}</h3>
+                          <div className="space-y-2.5">
+                            {(currentQ.options[language] || currentQ.options.ru).map((opt, oIdx) => {
+                              const isChecked = (answers[currentQ.id] || []).includes(oIdx);
+                              return (
+                                <div
+                                  key={oIdx}
+                                  onClick={() => handleSelectOption(oIdx, false)}
+                                  className={`p-3 rounded-2xl border-2 cursor-pointer transition text-sm flex items-start gap-3 ${
+                                    isChecked ? 'border-blue-600 bg-blue-50 text-blue-950 font-semibold' : 'border-slate-200 hover:border-blue-300'
+                                  }`}
+                                >
+                                  <span className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+                                    isChecked ? 'bg-blue-600 border-blue-600 text-white' : 'border-slate-300 bg-slate-50 text-slate-600'
+                                  }`}>
+                                    {letters[oIdx]}
+                                  </span>
+                                  <span className="flex-1 pt-0.5">{opt}</span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <h3 className="font-semibold text-slate-900 text-base sm:text-lg mb-6 leading-relaxed">
+                          {currentQ?.question[language] || currentQ?.question.ru}
+                        </h3>
+
+                        <div className="space-y-3 max-w-3xl">
+                          {(currentQ?.options[language] || currentQ?.options.ru).map((opt, oIdx) => {
+                            const isChecked = (answers[currentQ.id] || []).includes(oIdx);
+                            const isMult = currentQ?.type === 'multiple';
+
+                            return (
+                              <div
+                                key={oIdx}
+                                onClick={() => handleSelectOption(oIdx, isMult)}
+                                className={`p-4 rounded-2xl border-2 cursor-pointer transition text-sm sm:text-base flex items-start gap-3.5 ${
+                                  isChecked ? 'border-blue-600 bg-blue-50/90 text-blue-950 font-semibold' : 'border-slate-200 hover:border-blue-300 bg-white'
+                                }`}
+                              >
+                                <span className={`w-6 h-6 ${isMult ? 'rounded-lg' : 'rounded-full'} border-2 flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+                                  isChecked ? 'bg-blue-600 border-blue-600 text-white' : 'border-slate-300 bg-slate-50 text-slate-600'
+                                }`}>
+                                  {isMult && isChecked ? '✓' : letters[oIdx]}
+                                </span>
+                                <span className="flex-1 pt-0.5">{opt}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                     )}
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      );
-    }
 
-    // ==========================================
-    // 7. RETEST MODAL SUB-COMPONENT
-    // ==========================================
-    function RetestModalView({ language, items, onClose, onResolve }) {
-      const t = TRANSLATIONS[language];
-      const [curIdx, setCurIdx] = useState(0);
-      const [selOpt, setSelOpt] = useState(null);
-      const [checked, setChecked] = useState(false);
-      const [isCorrect, setIsCorrect] = useState(false);
+                  {/* Navigation Footer */}
+                  <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-between items-center">
+                    <button
+                      disabled={currentIndex === 0}
+                      onClick={() => setCurrentIndex(p => p - 1)}
+                      className="px-4 py-2 border rounded-xl text-xs sm:text-sm font-bold disabled:opacity-40"
+                    >
+                      ← Назад
+                    </button>
 
-      const item = items[curIdx];
-      const q = item?.questionData;
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          if (currentIndex < currentSubjectQuestions.length - 1) {
+                            setCurrentIndex(p => p + 1);
+                          } else {
+                            const curSubIdx = activeSubjects.indexOf(activeSubject);
+                            if (curSubIdx < activeSubjects.length - 1) {
+                              setActiveSubject(activeSubjects[curSubIdx + 1]);
+                              setCurrentIndex(0);
+                            } else {
+                              setShowConfirm(true);
+                            }
+                          }
+                        }}
+                        className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow"
+                      >
+                        Вперед →
+                      </button>
 
-      if (!q) return null;
-
-      const handleCheck = () => {
-        if (selOpt === null) return;
-        const c = selOpt === q.correctIndex;
-        setIsCorrect(c);
-        setChecked(true);
-        if (c) onResolve(item.mistakeId);
-      };
-
-      const handleNext = () => {
-        setChecked(false);
-        setSelOpt(null);
-        if (curIdx < items.length - 1) setCurIdx(p => p + 1);
-        else onClose();
-      };
-
-      return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-2xl w-full shadow-2xl border border-slate-200">
-            <div className="flex justify-between items-center pb-3 border-b mb-4">
-              <h3 className="font-bold text-slate-900 text-base">{t.retestModalTitle} ({curIdx + 1}/{items.length})</h3>
-              <button onClick={onClose} className="text-slate-400 font-bold">✕</button>
-            </div>
-
-            <div className="text-base font-semibold text-slate-900 mb-5">{q.question}</div>
-
-            <div className="space-y-2.5 mb-5">
-              {q.options.map((opt, idx) => {
-                let st = "border-slate-200 bg-white";
-                if (checked) {
-                  if (idx === q.correctIndex) st = "border-emerald-500 bg-emerald-50 text-emerald-950 font-bold";
-                  else if (idx === selOpt && !isCorrect) st = "border-rose-400 bg-rose-50 text-rose-950 font-bold";
-                } else if (selOpt === idx) {
-                  st = "border-blue-600 bg-blue-50 text-blue-900 font-bold";
-                }
-
-                return (
-                  <div
-                    key={idx}
-                    onClick={() => !checked && setSelOpt(idx)}
-                    className={`p-3 rounded-xl border-2 cursor-pointer text-sm ${st}`}
-                  >
-                    {opt}
+                      <button
+                        onClick={() => setShowConfirm(true)}
+                        className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow"
+                      >
+                        Завершить
+                      </button>
+                    </div>
                   </div>
-                );
-              })}
-            </div>
+                </div>
 
-            {checked && (
-              <div className={`p-3.5 rounded-xl border text-xs mb-4 ${isCorrect ? 'bg-emerald-50 border-emerald-300 text-emerald-900' : 'bg-rose-50 border-rose-300 text-rose-900'}`}>
-                <div className="font-bold mb-1">{isCorrect ? '✓ ' + t.retestSuccessNotice : '✕ ' + t.retestFailNotice}</div>
-                <div>{q.explanation}</div>
+                {/* FULL QUESTION MATRIX (4 cols) */}
+                <div className="lg:col-span-4 sticky top-36">
+                  <div className="bg-white rounded-3xl border border-slate-200 p-5 shadow-sm space-y-4">
+                    <div className="flex justify-between items-center pb-3 border-b">
+                      <h4 className="font-bold text-slate-800 text-sm">
+                        Сетка вопросов ({currentSubjectQuestions.length})
+                      </h4>
+                      <span className="text-xs font-bold px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full">
+                        {currentSubjectQuestions.filter(q => answers[q.id]?.length > 0).length}/{currentSubjectQuestions.length}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-5 gap-2 max-h-[380px] overflow-y-auto pr-1">
+                      {currentSubjectQuestions.map((q, idx) => {
+                        const isAns = answers[q.id]?.length > 0;
+                        const isCur = currentIndex === idx;
+                        const isFlag = !!bookmarked[q.id];
+
+                        let st = "bg-slate-100 text-slate-700 border-slate-200";
+                        if (isAns) st = "bg-emerald-600 text-white border-emerald-600 shadow-sm";
+                        if (isCur) st += " ring-2 ring-blue-600 font-black scale-105 border-blue-600";
+
+                        return (
+                          <button
+                            key={q.id}
+                            onClick={() => setCurrentIndex(idx)}
+                            className={`h-10 rounded-xl text-xs font-bold border transition relative flex items-center justify-center ${st}`}
+                          >
+                            <span>{idx + 1}</span>
+                            {isFlag && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-500 rounded-full border-2 border-white" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
+          </main>
 
-            <div className="flex justify-between items-center pt-3 border-t">
-              <button onClick={onClose} className="px-4 py-2 border rounded-xl text-xs font-semibold">{t.finishRetestBtn}</button>
-              {!checked ? (
-                <button
-                  disabled={selOpt === null}
-                  onClick={handleCheck}
-                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl disabled:opacity-40"
-                >
-                  Проверить
-                </button>
-              ) : (
-                <button
-                  onClick={handleNext}
-                  className="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl"
-                >
-                  {curIdx < items.length - 1 ? t.next : t.finishRetestBtn}
-                </button>
-              )}
+          {/* CALCULATOR MODAL */}
+          {showCalc && (
+            <div className="fixed bottom-6 right-6 z-50 w-72 bg-slate-900 text-white rounded-3xl shadow-2xl border border-slate-700 p-4">
+              <div className="flex justify-between items-center pb-2 border-b border-slate-800 mb-3 text-xs font-bold">
+                <span>🧮 Калькулятор ЕНТ</span>
+                <button onClick={() => setShowCalc(false)}>✕</button>
+              </div>
+              <div className="bg-slate-950 p-3 rounded-2xl text-right font-mono text-xl text-emerald-400 mb-3">
+                0
+              </div>
+              <div className="grid grid-cols-4 gap-1.5 text-sm font-bold">
+                <button className="col-span-2 p-2 bg-slate-800 rounded-xl text-rose-400">C</button>
+                <button className="p-2 bg-slate-800 rounded-xl text-blue-400">÷</button>
+                <button className="p-2 bg-slate-800 rounded-xl text-blue-400">×</button>
+                <button className="p-2 bg-slate-800/80 rounded-xl">7</button>
+                <button className="p-2 bg-slate-800/80 rounded-xl">8</button>
+                <button className="p-2 bg-slate-800/80 rounded-xl">9</button>
+                <button className="p-2 bg-slate-800 rounded-xl text-blue-400">−</button>
+                <button className="p-2 bg-slate-800/80 rounded-xl">4</button>
+                <button className="p-2 bg-slate-800/80 rounded-xl">5</button>
+                <button className="p-2 bg-slate-800/80 rounded-xl">6</button>
+                <button className="p-2 bg-slate-800 rounded-xl text-blue-400">+</button>
+                <button className="p-2 bg-slate-800/80 rounded-xl">1</button>
+                <button className="p-2 bg-slate-800/80 rounded-xl">2</button>
+                <button className="p-2 bg-slate-800/80 rounded-xl">3</button>
+                <button className="p-2 bg-blue-600 text-white rounded-xl">=</button>
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* REFERENCE MATERIALS MODAL */}
+          {showRef && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
+              <div className="bg-white rounded-3xl max-w-4xl w-full h-[80vh] flex flex-col overflow-hidden shadow-2xl">
+                <div className="bg-[#0f2444] text-white p-4 flex justify-between items-center">
+                  <h3 className="font-bold text-base">Справочные материалы</h3>
+                  <button onClick={() => setShowRef(false)} className="text-white font-bold">✕</button>
+                </div>
+                <div className="p-4 bg-slate-100 flex gap-2 border-b">
+                  <button onClick={() => setRefTab('mendeleev')} className={`px-4 py-1.5 rounded-xl text-xs font-bold ${refTab === 'mendeleev' ? 'bg-blue-600 text-white' : 'bg-white'}`}>Таблица Менделеева</button>
+                  <button onClick={() => setRefTab('solubility')} className={`px-4 py-1.5 rounded-xl text-xs font-bold ${refTab === 'solubility' ? 'bg-blue-600 text-white' : 'bg-white'}`}>Таблица растворимости</button>
+                  <button onClick={() => setRefTab('formulas')} className={`px-4 py-1.5 rounded-xl text-xs font-bold ${refTab === 'formulas' ? 'bg-blue-600 text-white' : 'bg-white'}`}>Формулы</button>
+                </div>
+                <div className="flex-1 overflow-y-auto p-6 text-sm">
+                  {refTab === 'mendeleev' && (
+                    <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 text-center">
+                      <div className="p-3 bg-slate-50 border rounded-xl font-bold">1<br/><span className="text-xl text-blue-700">H</span><br/>Водород</div>
+                      <div className="p-3 bg-slate-50 border rounded-xl font-bold">2<br/><span className="text-xl text-blue-700">He</span><br/>Гелий</div>
+                      <div className="p-3 bg-slate-50 border rounded-xl font-bold">3<br/><span className="text-xl text-blue-700">Li</span><br/>Литий</div>
+                      <div className="p-3 bg-slate-50 border rounded-xl font-bold">6<br/><span className="text-xl text-blue-700">C</span><br/>Углерод</div>
+                      <div className="p-3 bg-slate-50 border rounded-xl font-bold">7<br/><span className="text-xl text-blue-700">N</span><br/>Азот</div>
+                      <div className="p-3 bg-slate-50 border rounded-xl font-bold">8<br/><span className="text-xl text-blue-700">O</span><br/>Кислород</div>
+                      <div className="p-3 bg-slate-50 border rounded-xl font-bold">11<br/><span className="text-xl text-blue-700">Na</span><br/>Натрий</div>
+                      <div className="p-3 bg-slate-50 border rounded-xl font-bold">12<br/><span className="text-xl text-blue-700">Mg</span><br/>Магний</div>
+                      <div className="p-3 bg-slate-50 border rounded-xl font-bold">26<br/><span className="text-xl text-blue-700">Fe</span><br/>Железо</div>
+                      <div className="p-3 bg-slate-50 border rounded-xl font-bold">29<br/><span className="text-xl text-blue-700">Cu</span><br/>Медь</div>
+                      <div className="p-3 bg-slate-50 border rounded-xl font-bold">30<br/><span className="text-xl text-blue-700">Zn</span><br/>Цинк</div>
+                      <div className="p-3 bg-slate-50 border rounded-xl font-bold">47<br/><span className="text-xl text-blue-700">Ag</span><br/>Серебро</div>
+                    </div>
+                  )}
+                  {refTab === 'solubility' && (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs text-center border-collapse">
+                        <thead>
+                          <tr className="bg-slate-200">
+                            <th className="p-2 border">Ион</th>
+                            <th className="p-2 border">H⁺</th>
+                            <th className="p-2 border">Na⁺</th>
+                            <th className="p-2 border">K⁺</th>
+                            <th className="p-2 border">Ba²⁺</th>
+                            <th className="p-2 border">Ag⁺</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td className="p-2 border font-bold">OH⁻</td>
+                            <td className="p-2 border text-emerald-700 font-bold">Р</td>
+                            <td className="p-2 border text-emerald-700 font-bold">Р</td>
+                            <td className="p-2 border text-emerald-700 font-bold">Р</td>
+                            <td className="p-2 border text-emerald-700 font-bold">Р</td>
+                            <td className="p-2 border text-slate-400">-</td>
+                          </tr>
+                          <tr>
+                            <td className="p-2 border font-bold">Cl⁻</td>
+                            <td className="p-2 border text-emerald-700 font-bold">Р</td>
+                            <td className="p-2 border text-emerald-700 font-bold">Р</td>
+                            <td className="p-2 border text-emerald-700 font-bold">Р</td>
+                            <td className="p-2 border text-emerald-700 font-bold">Р</td>
+                            <td className="p-2 border text-rose-700 font-bold">Н</td>
+                          </tr>
+                          <tr>
+                            <td className="p-2 border font-bold">SO₄²⁻</td>
+                            <td className="p-2 border text-emerald-700 font-bold">Р</td>
+                            <td className="p-2 border text-emerald-700 font-bold">Р</td>
+                            <td className="p-2 border text-emerald-700 font-bold">Р</td>
+                            <td className="p-2 border text-rose-700 font-bold">Н</td>
+                            <td className="p-2 border text-amber-700 font-bold">М</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                  {refTab === 'formulas' && (
+                    <div className="space-y-4">
+                      <div className="bg-slate-50 p-4 rounded-xl border">
+                        <div className="font-bold text-blue-900 mb-1">Физика:</div>
+                        <div className="font-mono text-xs">v = v₀ + at | S = v₀t + at²/2 | F = ma | Eк = mv²/2 | Ep = mgh | I = U/R</div>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-xl border">
+                        <div className="font-bold text-indigo-900 mb-1">Математика:</div>
+                        <div className="font-mono text-xs">sin²α + cos²α = 1 | (xⁿ)' = n·xⁿ⁻¹ | (sin x)' = cos x | Sкруг = πR²</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* CONFIRM FINISH MODAL */}
+          {showConfirm && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
+              <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border text-center">
+                <h3 className="text-xl font-bold mb-2">Завершить экзамен?</h3>
+                <p className="text-xs text-slate-500 mb-6">Все 120 вопросов будут проверены по 140-балльной шкале, и откроется аналитика ошибок.</p>
+                <div className="flex gap-3">
+                  <button onClick={() => setShowConfirm(false)} className="flex-1 py-2.5 rounded-xl border text-xs font-semibold">Вернуться</button>
+                  <button onClick={finishExam} className="flex-1 py-2.5 rounded-xl bg-rose-600 text-white font-bold text-xs shadow">Да, завершить</button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       );
     }

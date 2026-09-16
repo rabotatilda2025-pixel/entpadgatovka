@@ -1,10 +1,10 @@
 import React from 'react';
-import EntPlatform from './components/EntPlatform';
+import EntSimulatorApp from './components/EntSimulatorApp';
 
 export default function App() {
   return (
     <div className="w-full min-h-screen">
-      <EntPlatform />
+      <EntSimulatorApp />
     </div>
   );
 }
